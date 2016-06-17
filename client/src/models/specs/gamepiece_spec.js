@@ -36,11 +36,37 @@ describe('GamePiece', function() {
         ];
         var pieceCorners = piece.corners(10, 10);
 
-        console.log(corners);
-        console.log(" ---- ");
-        console.log(pieceCorners);
+
 
         assert.deepEqual(corners, pieceCorners);
+    });
+    it('Can rotate', function(){
+        var rotated = [
+            [0,0,0,0,0],
+            [0,0,0,0,0],
+            [0,1,1,1,1],
+            [0,1,0,0,0],
+            [0,0,0,0,0]
+        ];
+        piece.rotate();
+        assert.deepEqual(rotated, piece.array);
+    });
+
+    it('Can flip', function(){
+        var flipped = [
+            [0,0,0,0,0],
+            [0,0,1,1,0],
+            [0,0,1,0,0],
+            [0,0,1,0,0],
+            [0,0,1,0,0]
+        ];
+        piece.flip();
+        assert.deepEqual(flipped, piece.array);
+    });
+    it('Can get new relative', function(){
+        var startRel = piece.relative;
+        var newRel = piece.getRel();
+        assert.deepEqual(startRel, newRel);
     });
 
 });

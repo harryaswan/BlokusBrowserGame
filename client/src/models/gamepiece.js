@@ -1,14 +1,7 @@
 var GamePiece = function(tiles) {
-    this.array = new Array(5);
-    for (var i = 0; i < 5; i++) {
-      this.array[i] = new Array(5);
-      for (var j = 0; j < 5; j++) {
-          this.array[i][j] = 0;
-      }
-    }
+    this.relative = tiles;
+    this.array = this.generateArray();
     this.setup(tiles);
-    // this.dump();
-
 
 };
 
@@ -62,6 +55,45 @@ GamePiece.prototype = {
             }
         }
         return corners;
+    },
+    rotate: function() {
+        var rotatedArray = this.generateArray();
+        for (var x = 4; x > -1; x--) {
+            for (var y = 0; y < 5; y++) {
+                var newY = y - 4;
+                if (newY < 0) {
+                    newY = newY * -1;
+                }
+                rotatedArray[x][y] = this.array[newY][x];
+            }
+        }
+        this.array = rotatedArray;
+    },
+    flip: function() {
+        this.array = this.array.reverse();
+    },
+    getRel: function() {
+        var rel = [[],[],[],[],[]];
+        for (var y = 0; y < this.array.length; y++) {
+            for (var x = 0; x < this.array[y].length; x++) {
+                if (this.array[y][x]) {
+                    rel[y].push(x);
+                }
+            }
+        }
+        return rel;
+    },
+    generateArray: function(){
+        var array = new Array(5);
+        for (var i = 0; i < 5; i++) {
+          array[i] = new Array(5);
+          for (var j = 0; j < 5; j++) {
+              array[i][j] = 0;
+
+          }
+
+        }
+        return array;
     }
 
 };
@@ -69,3 +101,17 @@ GamePiece.prototype = {
 
 
 module.exports = GamePiece;
+//
+// for each row in the array
+// take the first element
+// push it into the first row of the new array
+//
+// for each row in the array
+// take the second element
+// push it into the second row of the new array
+//
+// var i = 0;
+// while (i < 5) {
+//     rotatedArray[i].push(this.Array[i][i]);
+//     i++;
+// }

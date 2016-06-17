@@ -28,6 +28,7 @@ GameBoard.prototype = {
     },
     fill: function(coordinates, colourString) {
       this.boardArray[coordinates[0]][coordinates[1]].push(colourString);
+      this.updateColourCount(colourString);
     },
     inBounds: function(coordinates) {
       if (this.boardArray[coordinates[0]] && this.boardArray[coordinates[0]][coordinates[1]]) {
@@ -36,7 +37,59 @@ GameBoard.prototype = {
         else {
           return false;
         }
+    },
+    updateColourCount: function(colourString) {
+      switch(colourString) {
+        case "R":
+          this.redCount += 1;
+          break;
+        case "G":
+          this.greenCount += 1;
+          break;
+        case "B":
+          this.blueCount += 1;
+          break;
+        case "Y":
+          this.yellowCount += 1;
+          break;
+      }
     }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = GameBoard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

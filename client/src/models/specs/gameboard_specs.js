@@ -33,7 +33,7 @@ describe('GameBoard', function() {
     it('can decide which adjacent squares of a placed piece are in bounds', function() {
 
     });
-    it('can tell when two placed pieces are overlapping at a given square', function() {
+    it('can tell when an overlap exists at a given square', function() {
 
     });
     it('can tell when a placed piece is overlapping one or more occupied squares', function() {
@@ -43,6 +43,20 @@ describe('GameBoard', function() {
 
     });
     it('can decide if a piece placement meets the edge requirement', function() {
+
+    });
+    it('can decide if a placement is legal', function() {
+
+    });
+    it('can update its array if a placement is legal', function() {
+
+    });
+    it('knows how many squares are occupied by a given colour', function() {
+
+        board.fill([9,7], 'R');
+        assert.equal(1, board.redCount);
+    });
+    it('knows when a placed piece will occupy a corner square', function() {
 
     });
 

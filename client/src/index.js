@@ -1,6 +1,13 @@
-
+var GamePiece = require('./models/gamepiece.js');
 
 window.onload = function(e) {
-    console.log("Hello There");
-    console.log("It works");
+    var rel = [
+        [2],
+        [2],
+        [2],
+        [2,3],
+        []
+    ];
+    var piece = new GamePiece(rel);
+    console.log('arr', piece.array);
 };

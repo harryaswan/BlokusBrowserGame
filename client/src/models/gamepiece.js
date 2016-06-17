@@ -34,6 +34,13 @@ GamePiece.prototype = {
                         if (!this.array[y][x - 1] && !this.array[y + 1][x]) {
                             corners.push([centerY + y + 1, centerX + x - 1]);
                         }
+                    } else if (this.array[y + 1] === undefined) {
+                        if (!this.array[y][x + 1]) {
+                            corners.push([centerY + y + 1, centerX + x + 1]);
+                        }
+                        if (!this.array[y][x - 1]) {
+                            corners.push([centerY + y + 1, centerX + x - 1]);
+                        }
                     }
 
                     if (this.array[y - 1]) {

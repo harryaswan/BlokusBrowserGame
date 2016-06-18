@@ -35,11 +35,32 @@ describe('GamePiece', function() {
             [10, 12]
         ];
         var pieceCorners = piece.corners(10, 10);
-
-
-
         assert.deepEqual(corners, pieceCorners);
     });
+
+    it('Knows its flat edges', function() {
+
+        var flats = [
+            [8, 11],
+            [8, 9],
+            [9, 11],
+            [9, 9],
+            [10, 11],
+            [10, 9],
+            [11, 9],
+            [12, 10],
+            [11, 12],
+            [12, 11]
+      
+        ];
+        var pieceFlats = piece.flats(10, 10);
+        assert.deepEqual(flats, pieceFlats);
+        // console.log('pieceFlats', pieceFlats);
+    });
+
+
+
+
     it('Can rotate', function(){
         var rotated = [
             [0,0,0,0,0],
@@ -63,10 +84,18 @@ describe('GamePiece', function() {
         piece.flip();
         assert.deepEqual(flipped, piece.array);
     });
+
+
     it('Can get new relative', function(){
         var startRel = piece.relative;
         var newRel = piece.getRel();
         assert.deepEqual(startRel, newRel);
     });
 
+
+
 });
+
+
+
+

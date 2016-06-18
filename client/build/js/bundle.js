@@ -126,8 +126,42 @@
 	                }
 	            }
 	        }
+	        console.log(corners);
 	        return corners;
 	    },
+	
+	    flats: function(centerY, centerX) {
+	        centerY = centerY - 2;
+	        centerX = centerX - 2;
+	        var flatsArray = [];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	
+	                if (this.array[y][x]) {
+	
+	                      if (!this.array[y][x + 1]) {
+	                          flatsArray.push([centerY + y, centerX + x + 1]);
+	                      }
+	
+	                      if (!this.array[y][x - 1]) {
+	                          flatsArray.push([centerY + y, centerX + x - 1]);
+	                      }
+	
+	                      if (!this.array[y + 1][x]) {
+	                          flatsArray.push([centerY + y + 1, centerX + x]);
+	                      }
+	
+	                      if (!this.array[y][x]) {
+	                          flatsArray.push([centerY + y - 1, centerX + x]);
+	                      }
+	                }
+	            }
+	        }
+	        console.log(flatsArray);
+	        return flatsArray;
+	    },
+	
+	
 	    rotate: function() {
 	        var rotatedArray = this.generateArray();
 	        for (var x = 4; x > -1; x--) {

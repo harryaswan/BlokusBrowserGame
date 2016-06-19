@@ -1,5 +1,6 @@
 var assert = require('chai').assert;
 var GameBoard = require('../gameboard.js');
+var GamePiece = require('../gamepiece.js');
 
 describe('GameBoard', function() {
     beforeEach(function(){
@@ -7,7 +8,7 @@ describe('GameBoard', function() {
         board = new GameBoard();
 
     });
-    it('Its board array is an array of twenty arrays of twenty empty arrays!', function() {
+    it('has a board array which is an array of twenty arrays of twenty empty arrays!', function() {
 
         assert.equal(20, board.boardArray.length);
         assert.equal(20, board.boardArray[0].length);
@@ -19,19 +20,17 @@ describe('GameBoard', function() {
         console.log(board.boardArray[9][7][0]);
         assert.equal('R', board.boardArray[9][7][0]);
     });
-    it('can determine if a given set of coordinates falls within the bounds of its board array', function() {
+    it('can determine if a given coordinate pair falls within the bounds of its board array', function() {
 
         assert.equal(true, board.inBounds([10,10]));
         assert.equal(false, board.inBounds([20,20]));
     });
-    it('can decide which corners of a placed piece are in bounds', function() {
+    it('can take a list of coordinate pairs and remove those that fall outside its bounds', function() {
 
-    });
-    it('knows if a piece has been placed where one or more of its tiles fall out of bounds', function() {
-
-    });
-    it('can decide which adjacent squares of a placed piece are in bounds', function() {
-
+        var coordsList = [[2,1], [-2,3], [-2,-3], [2,-3], [10,20], [20, 10], [20,20]];
+        var coordsInBounds = board.listInBounds(coordsList);
+        assert.equal(1, coordsInBounds.length);
+        assert.deepEqual([2,1], coordsInBounds[0]);
     });
     it('can tell when an overlap exists at a given square', function() {
 
@@ -51,7 +50,7 @@ describe('GameBoard', function() {
     it('can update its array if a placement is legal', function() {
 
     });
-    it('knows how many squares are occupied by a given colour', function() {
+    it('adds one to the appropriate colour count when a square is filled with a colour', function() {
 
         board.fill([9,7], 'R');
         assert.equal(1, board.redCount);

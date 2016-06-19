@@ -12,6 +12,7 @@ describe('GamePiece', function() {
         ];
         piece = new GamePiece(rel);
     });
+
     it('Is set up correctly', function() {
 
         var theArray = [
@@ -41,6 +42,7 @@ describe('GamePiece', function() {
     it('Knows its flat edges', function() {
 
         var flats = [
+            [7,10],
             [8, 11],
             [8, 9],
             [9, 11],

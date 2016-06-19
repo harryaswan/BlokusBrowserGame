@@ -151,7 +151,7 @@
 	                          flatsArray.push([centerY + y + 1, centerX + x]);
 	                      }
 	
-	                      if (!this.array[y][x]) {
+	                      if (!this.array[y-1][x]) { // TODO: This will break because y-1 is undefined and cannot get x of undefined
 	                          flatsArray.push([centerY + y - 1, centerX + x]);
 	                      }
 	                }
@@ -175,9 +175,9 @@
 	        }
 	        this.array = rotatedArray;
 	    },
-	    flip: function() {
+	    flip: function() { // NOTE: do we want just vertical flip - do we want horizontal flip also
 	        this.array = this.array.reverse();
-	    },
+	    }, // NOTE: horizontal flip could be done by rotate twice and then flip ( no new functions required)
 	    getRel: function() {
 	        var rel = [[],[],[],[],[]];
 	        for (var y = 0; y < this.array.length; y++) {
@@ -187,7 +187,8 @@
 	                }
 	            }
 	        }
-	        return rel;
+	        this.relative = rel;
+	        return this.relative;
 	    },
 	    generateArray: function(){
 	        var array = new Array(5);

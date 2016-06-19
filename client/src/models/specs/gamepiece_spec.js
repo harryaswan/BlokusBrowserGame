@@ -51,7 +51,7 @@ describe('GamePiece', function() {
             [12, 10],
             [11, 12],
             [12, 11]
-      
+
         ];
         var pieceFlats = piece.flats(10, 10);
         assert.deepEqual(flats, pieceFlats);
@@ -95,7 +95,3 @@ describe('GamePiece', function() {
 
 
 });
-
-
-
-

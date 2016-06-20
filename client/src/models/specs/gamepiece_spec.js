@@ -42,7 +42,6 @@ describe('GamePiece', function() {
     it('Knows its flat edges', function() {
 
         var flats = [
-            [7,10],
             [8, 11],
             [8, 9],
             [9, 11],

@@ -4,10 +4,10 @@ var GameBoard = function() {
     //   this.board[i] = new Array(20);
     // }
     this.boardArray = this.generateBoardArray();
-    this.redCount = 0;
-    this.greenCount = 0;
-    this.blueCount = 0;
-    this.yellowCount = 0;
+    this.R = 0;
+    this.G = 0;
+    this.B = 0;
+    this.Y = 0;
 };
 
 GameBoard.prototype = {
@@ -31,7 +31,7 @@ GameBoard.prototype = {
     },
     inBounds: function(coordinates) {
         if (this.boardArray[coordinates[0]]) {
-            if (!(this.boardArray[coordinates[0]][coordinates[1]] === undefined)) {
+            if (this.boardArray[coordinates[0]][coordinates[1]] !== undefined) {
                 return true;
             } else {
                 return false;
@@ -42,7 +42,7 @@ GameBoard.prototype = {
     },
     listInBounds: function(coordinatesList) {
         var inBoundsCoords = [];
-        for (coordPair of coordinatesList) {
+        for (var coordPair of coordinatesList) {
             if (this.inBounds(coordPair)) {
                 inBoundsCoords.push(coordPair);
             }
@@ -60,20 +60,7 @@ GameBoard.prototype = {
     },
 
     updateColourCount: function(colourString) {
-        switch(colourString) {
-            case "R":
-                this.redCount += 1;
-                break;
-            case "G":
-                this.greenCount += 1;
-                break;
-            case "B":
-                this.blueCount += 1;
-                break;
-            case "Y":
-                this.yellowCount += 1;
-                break;
-        }
+        this[colourString] += 1;
     },
     checkSquare: function(coordinatePair, userColour) {
         var square = this.boardArray[coordinatePair[0]][coordinatePair[1]];
@@ -89,7 +76,7 @@ GameBoard.prototype = {
         return false;
     },
     checkSquaresAvailable: function(coordinatesList) {
-        for (coordPair of coordinatesList) {
+        for (var coordPair of coordinatesList) {
             if (!this.checkSquare(coordPair)) {
                 return false;
             }
@@ -98,12 +85,12 @@ GameBoard.prototype = {
     },
     checkCorners: function (coordinatesList, userColour) {
         var foundValidCorner = false;
-        for (coordPair of coordinatesList) {
+        for (var coordPair of coordinatesList) {
             if (this.checkSquare(coordPair, userColour)) {
                 foundValidCorner = true;
             }
         }
-        return foundValidCorner;  
+        return foundValidCorner;
     },
 
     checkEdges: function( coordinatesList, userColour) {
@@ -111,6 +98,11 @@ GameBoard.prototype = {
     },
 
     isLegal: function( coordinates, piece, userColour ){
+        if (this[userColour] === 0) {
+            if(!this.cornerSquare(piece.covered(coordinates[0], coordinates[1]))) {
+                return false;
+            }
+        }
         if(this.isInBounds(piece.covered(coordinates[0], coordinates[1]))){
             if(this.checkSquaresAvailable(piece.covered(coordinates[0], coordinates[1]))){
                 if(this.checkEdges(piece.flats(coordinates[0], coordinates[1]), userColour)){
@@ -127,7 +119,7 @@ GameBoard.prototype = {
         for( var item of coordinatesList ){
             if( (item[0] === 0 && item[1] === 0) || ( item[0] === 0 && item[1] === 19) || (item[0] === 19 && item[1] === 0) || (item[0] === 19 && item[1] === 19)){
                 return true;
-            }   
+            }
         }
         return false;
     }
@@ -150,23 +142,3 @@ GameBoard.prototype = {
 
 
 module.exports = GameBoard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

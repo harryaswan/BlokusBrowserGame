@@ -12,7 +12,7 @@ describe('GameBoard', function() {
             []
         ];
         piece = new GamePiece(rel);
-        
+
         board = new GameBoard();
 
     });
@@ -99,24 +99,14 @@ describe('GameBoard', function() {
     it('adds one to the appropriate colour count when a square is filled with a colour', function() {
 
         board.fill([9,7], 'R');
-        assert.equal(1, board.redCount);
+        assert.equal(1, board.R);
     });
     it('knows when a placed piece will occupy a corner square', function() {
         piece.flip();
-        var covered = piece.covered(1, 18);       
+        var covered = piece.covered(1, 18);
 
         assert.equal(true, board.cornerSquare(covered));
 
     });
 
 });
-
-
-
-
-
-
-
-
-
-

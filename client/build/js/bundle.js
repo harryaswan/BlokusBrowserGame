@@ -217,7 +217,7 @@
 	
 	    unique: function(array){
 	       var uniqueArray = [];
-	       for (item of array){
+	       for (var item of array){
 	          if (!this.isItemInArray(uniqueArray, item)){
 	            uniqueArray.push(item);
 	          }
@@ -280,24 +280,7 @@
 	    }
 	
 	};
-	
-	
-	
 	module.exports = GamePiece;
-	//
-	// for each row in the array
-	// take the first element
-	// push it into the first row of the new array
-	//
-	// for each row in the array
-	// take the second element
-	// push it into the second row of the new array
-	//
-	// var i = 0;
-	// while (i < 5) {
-	//     rotatedArray[i].push(this.Array[i][i]);
-	//     i++;
-	// }
 
 
 /***/ },

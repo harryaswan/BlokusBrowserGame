@@ -59,7 +59,19 @@ describe('GamePiece', function() {
         assert.deepEqual(flats, pieceFlats);
     });
 
+    it('Knows where its at', function() {
 
+        var covered = [
+            [8,10],
+            [9,10],
+            [10,10],
+            [11,10],
+            [11,11]
+        ];
+
+        var pieceCovered = piece.covered(10,10);
+        assert.deepEqual(covered, pieceCovered);
+    });
 
 
     it('Can rotate', function(){

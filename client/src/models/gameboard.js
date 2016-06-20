@@ -21,13 +21,13 @@ GameBoard.prototype = {
         for (var i = 0; i < 20; i++) {
             array[i] = new Array(20);
             for (var j = 0; j < 20; j++) {
-                array[i][j] = [];
+                array[i][j] = null;
             }
         }
         return array;
     },
     fill: function(coordinates, colourString) {
-        this.boardArray[coordinates[0]][coordinates[1]].push(colourString);
+        this.boardArray[coordinates[0]][coordinates[1]] = colourString;
         this.updateColourCount(colourString);
     },
     inBounds: function(coordinates) {

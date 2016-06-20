@@ -129,17 +129,12 @@ GamePiece.prototype = {
 
   isItemInArray: function(array, item) {
         for (var i = 0; i < array.length; i++) {
-            // This if statement depends on the format of your array
             if (array[i][0] == item[0] && array[i][1] == item[1]) {
-                return true;   // Found it
+                return true;
             }
         }
-        return false;   // Not found
+        return false;
     },
-
-
-
-
     rotate: function() {
         var rotatedArray = this.generateArray();
         for (var x = 4; x > -1; x--) {
@@ -152,9 +147,11 @@ GamePiece.prototype = {
             }
         }
         this.array = rotatedArray;
+        this.getRel();
     },
     flip: function() { // NOTE: do we want just vertical flip - do we want horizontal flip also
         this.array = this.array.reverse();
+        this.getRel();
     }, // NOTE: horizontal flip could be done by rotate twice and then flip ( no new functions required)
     getRel: function() {
         var rel = [[],[],[],[],[]];
@@ -171,12 +168,10 @@ GamePiece.prototype = {
     generateArray: function(){
         var array = new Array(5);
         for (var i = 0; i < 5; i++) {
-          array[i] = new Array(5);
-          for (var j = 0; j < 5; j++) {
-              array[i][j] = 0;
-
-          }
-
+            array[i] = new Array(5);
+            for (var j = 0; j < 5; j++) {
+                array[i][j] = 0;
+            }
         }
         return array;
     }

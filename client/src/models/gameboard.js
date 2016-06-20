@@ -11,10 +11,6 @@ var GameBoard = function() {
 };
 
 GameBoard.prototype = {
-    placePiece: function(piece, pivotPoint) {
-        var x = pivotPoint[0];
-        var y = pivotPoint[1];
-    },
     generateBoardArray: function(){
         var array = new Array(20);
         for (var i = 0; i < 20; i++) {
@@ -106,7 +102,7 @@ GameBoard.prototype = {
         }
         if(this.isInBounds(piece.covered(coordinates))){
             if(this.checkSquaresAvailable(piece.covered(coordinates))){
-                if(this.checkEdges(this.listInBounds(piece.flats(coordinates)), userColour)){                
+                if(this.checkEdges(this.listInBounds(piece.flats(coordinates)), userColour)){
                     if(this[userColour] === 0 || this.checkCorners(this.listInBounds(piece.corners(coordinates)), userColour)){
                         return true;
                     }
@@ -127,10 +123,12 @@ GameBoard.prototype = {
 
     placePiece: function(coordinates, piece, userColour){
         if (this.isLegal(coordinates, piece, userColour)) {
-            for (pair of piece.covered(coordinates)) {
+            for (var pair of piece.covered(coordinates)) {
                 this.fill(pair, userColour);
             }
+            return true;
         }
+        return false;
     }
 };
 

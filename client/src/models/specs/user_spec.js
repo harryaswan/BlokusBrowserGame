@@ -14,5 +14,9 @@ describe('User', function() {
     });
     it('has a colour code', function() {
         assert.equal('B', user.colourCode());
-    })
+    });
+
+    it('has an empty pieces array', function() {
+        assert.equal(0, user.pieces.length);
+    });
 });

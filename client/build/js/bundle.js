@@ -44,52 +44,28 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var GamePiece = __webpack_require__(1);
-	var RenderEngine = __webpack_require__(2);
+	var Game = __webpack_require__(3);
+	var User = __webpack_require__(6);
 	
 	window.onload = function(e) {
-	    var rel = [
-	        [2],
-	        [2],
-	        [2],
-	        [2,3],
-	        []
-	    ];
 	
-	    var piece = new GamePiece(rel);
-	
-	    var board = generateArray();
 	    var canvas = document.getElementById('gameboard');
-	    var render = new RenderEngine(canvas, 600);
-	
-	    render.redraw(board);
-	
-	    console.log(render);
-	
-	    console.log(canvas);
+	    var users = [];
+	    users.push(new User("Jimmy", "Red"));
+	    users.push(new User("John", "Blue"));
+	    users.push(new User("Frank", "Green"));
+	    users.push(new User("Colin", "Yellow"));
+	    var game = new Game(users, canvas, 600);
 	
 	    canvas.addEventListener('click', function(e) {
-	        var cPos = render.getMousePos(e);
-	        board[cPos.y][cPos.x] = "blue"; // grab colour from current user
-	        render.redraw(board, e);
+	        game.placePiece(e, game);
 	    });
 	
 	    canvas.addEventListener('mousemove', function(e) {
-	        var userColour = "green"; // grab colour from current user
-	        render.redraw(board, e, userColour, rel);
+	        game.onHover(e, game);
 	    });
 	
 	
-	};
-	var generateArray = function(){
-	    var array = new Array(20);
-	    for (var i = 0; i < 20; i++) {
-	      array[i] = new Array(20);
-	      for (var j = 0; j < 20; j++) {
-	          array[i][j] = 'white';
-	      }
-	    }
-	    return array;
 	};
 
 
@@ -228,17 +204,12 @@
 	
 	  isItemInArray: function(array, item) {
 	        for (var i = 0; i < array.length; i++) {
-	            // This if statement depends on the format of your array
 	            if (array[i][0] == item[0] && array[i][1] == item[1]) {
-	                return true;   // Found it
+	                return true;
 	            }
 	        }
-	        return false;   // Not found
+	        return false;
 	    },
-	
-	
-	
-	
 	    rotate: function() {
 	        var rotatedArray = this.generateArray();
 	        for (var x = 4; x > -1; x--) {
@@ -251,9 +222,11 @@
 	            }
 	        }
 	        this.array = rotatedArray;
+	        this.getRel();
 	    },
 	    flip: function() { // NOTE: do we want just vertical flip - do we want horizontal flip also
 	        this.array = this.array.reverse();
+	        this.getRel();
 	    }, // NOTE: horizontal flip could be done by rotate twice and then flip ( no new functions required)
 	    getRel: function() {
 	        var rel = [[],[],[],[],[]];
@@ -270,12 +243,10 @@
 	    generateArray: function(){
 	        var array = new Array(5);
 	        for (var i = 0; i < 5; i++) {
-	          array[i] = new Array(5);
-	          for (var j = 0; j < 5; j++) {
-	              array[i][j] = 0;
-	
-	          }
-	
+	            array[i] = new Array(5);
+	            for (var j = 0; j < 5; j++) {
+	                array[i][j] = 0;
+	            }
 	        }
 	        return array;
 	    }
@@ -304,7 +275,7 @@
 	    fillBoard: function(board) {
 	        for (var y = 0; y < board.length; y++) {
 	            for (var x = 0; x < board[y].length; x++) {
-	                this.fillBox(x,y,board[y][x]);
+	                this.fillBox(x,y,this.getUserColour(board[y][x]));
 	            }
 	        }
 	    },
@@ -315,19 +286,20 @@
 	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
 	    },
 	    redraw: function(board, mouseEvent, userColour, piece) {
+	        var curPos = null;
 	        if (mouseEvent) {
-	            var curPos = this.getMousePos(mouseEvent);
+	            curPos = this.getMousePos(mouseEvent);
 	        }
 	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	        this.fillBoard(board);
-	        if (curPos && piece) {
+	        if (curPos &&  userColour &&piece) {
 	            this.highlightBox(curPos, userColour, piece);
 	        }
 	        this.drawGrid();
 	    },
 	    highlightBox: function(pos, userColour, piece) {
 	        this.context.beginPath();
-	        this.context.strokeStyle = userColour;
+	        this.context.strokeStyle = this.getUserColour(userColour);
 	        this.context.lineWidth = this.scale / 5;
 	        var x = pos.x - 2;
 	        var y = pos.y - 2;
@@ -378,6 +350,18 @@
 	            i = i + this.scale;
 	        }
 	        this.context.stroke();
+	    },
+	    getUserColour: function(colour) {
+	        switch (colour) {
+	            case 'R':
+	                return 'red';
+	            case 'G':
+	                return 'green';
+	            case 'B':
+	                return 'blue';
+	            case 'Y':
+	                return 'yellow';
+	        }
 	    }
 	};
 	
@@ -402,6 +386,417 @@
 	//     console.log(board);
 	//     render.redraw(board, e);
 	// });
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var GameBoard = __webpack_require__(4);
+	var RenderEngine = __webpack_require__(2);
+	var PresetPieces = __webpack_require__(5);
+	
+	var Game = function(users, canvasElement, canvasWidth) {
+	    this.users = users;
+	    this.currentUser = 0;
+	    this.board = new GameBoard();
+	    this.render = new RenderEngine(canvasElement, canvasWidth);
+	};
+	
+	Game.prototype = {
+	
+	    assignPieces: function() {
+	        for (var user of this.users) {
+	            user.pieces = new PresetPieces().generatePieces();
+	        }
+	    },
+	    placePiece: function(e, game) {
+	        var cPos = game.render.getMousePos(e);
+	        var curUser = game.users[game.currentUser];
+	        if (game.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.getColourCode())) {
+	            curUser.removeSelectedPiece();
+	            game.render.redraw(game.board.boardArray);
+	            game.nextPlayer();
+	        }
+	    },
+	    nextPlayer: function() {
+	        this.currentUser++;
+	        if (this.currentUser >= this.users.length) {
+	            this.currentUser = 0;
+	        }
+	    },
+	    currUser: function() {
+	        return this.users[this.currentUser];
+	    },
+	    onHover: function(e, game) {
+	        var curUser = game.currUser();
+	        this.render.redraw(game.board.boardArray, e, curUser.getColourCode(), curUser.getSelectedPiece().relative);
+	    }
+	
+	};
+	
+	module.exports = Game;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var GameBoard = function() {
+	    // this.board = new Array(20);
+	    // for (var i = 0; i < 20; i++) {
+	    //   this.board[i] = new Array(20);
+	    // }
+	    this.boardArray = this.generateBoardArray();
+	    this.R = 0;
+	    this.G = 0;
+	    this.B = 0;
+	    this.Y = 0;
+	};
+	
+	GameBoard.prototype = {
+	    generateBoardArray: function(){
+	        var array = new Array(20);
+	        for (var i = 0; i < 20; i++) {
+	            array[i] = new Array(20);
+	            for (var j = 0; j < 20; j++) {
+	                array[i][j] = null;
+	            }
+	        }
+	        return array;
+	    },
+	    fill: function(coordinates, colourString) {
+	        this.boardArray[coordinates[0]][coordinates[1]] = colourString;
+	        this.updateColourCount(colourString);
+	    },
+	    inBounds: function(coordinates) {
+	        if (this.boardArray[coordinates[0]]) {
+	            if (this.boardArray[coordinates[0]][coordinates[1]] !== undefined) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        } else {
+	            return false;
+	        }
+	    },
+	    listInBounds: function(coordinatesList) {
+	        var inBoundsCoords = [];
+	        for (var coordPair of coordinatesList) {
+	            if (this.inBounds(coordPair)) {
+	                inBoundsCoords.push(coordPair);
+	            }
+	        }
+	        return inBoundsCoords;
+	    },
+	
+	    isInBounds: function(coordinatesList){
+	        if(this.listInBounds(coordinatesList).length === coordinatesList.length){
+	            return true;
+	        } else {
+	            return false;
+	        }
+	
+	    },
+	
+	    updateColourCount: function(colourString) {
+	        this[colourString] += 1;
+	    },
+	    checkSquare: function(coordinatePair, userColour) {
+	        var square = this.boardArray[coordinatePair[0]][coordinatePair[1]];
+	        if (userColour) {
+	            if (square === userColour) {
+	                return true;
+	            }
+	        } else {
+	            if (!square) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    },
+	    checkSquaresAvailable: function(coordinatesList) {
+	        for (var coordPair of coordinatesList) {
+	            if (!this.checkSquare(coordPair)) {
+	                return false;
+	            }
+	        }
+	        return true;
+	    },
+	    checkCorners: function (coordinatesList, userColour) {
+	        var foundValidCorner = false;
+	        for (var coordPair of coordinatesList) {
+	            if (this.checkSquare(coordPair, userColour)) {
+	                foundValidCorner = true;
+	            }
+	        }
+	        return foundValidCorner;
+	    },
+	
+	    checkEdges: function( coordinatesList, userColour) {
+	        return !this.checkCorners(coordinatesList, userColour);
+	    },
+	
+	    isLegal: function( coordinates, piece, userColour ){
+	        if (this[userColour] === 0) {
+	
+	            if(!this.cornerSquare(piece.covered(coordinates))) {
+	                return false;
+	            }
+	        }
+	        if(this.isInBounds(piece.covered(coordinates))){
+	            if(this.checkSquaresAvailable(piece.covered(coordinates))){
+	                if(this.checkEdges(this.listInBounds(piece.flats(coordinates)), userColour)){
+	                    if(this[userColour] === 0 || this.checkCorners(this.listInBounds(piece.corners(coordinates)), userColour)){
+	                        return true;
+	                    }
+	                }
+	            }
+	        }
+	        return false;
+	    },
+	
+	    cornerSquare: function( coordinatesList ){
+	        for( var item of coordinatesList ){
+	            if( (item[0] === 0 && item[1] === 0) || ( item[0] === 0 && item[1] === 19) || (item[0] === 19 && item[1] === 0) || (item[0] === 19 && item[1] === 19)){
+	                return true;
+	            }
+	        }
+	        return false;
+	    },
+	
+	    placePiece: function(coordinates, piece, userColour){
+	        if (this.isLegal(coordinates, piece, userColour)) {
+	            for (var pair of piece.covered(coordinates)) {
+	                this.fill(pair, userColour);
+	            }
+	            return true;
+	        }
+	        return false;
+	    }
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	module.exports = GameBoard;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var GamePiece = __webpack_require__(1);
+	
+	var PresetPieces = function() {
+	    this.rels = [
+	        [[ ], [ ], [2], [ ], [ ]],
+	        [[ ], [ ], [2,3], [ ], [ ]],
+	        [[ ], [ ], [1,2], [2], [ ]],
+	        [[ ], [ ], [1,2,3], [ ], [ ]],
+	        [[ ], [ 2,3], [2,3], [ ], [ ]],
+	        [[ ], [2], [1,2,3], [ ], [ ]],
+	        [[ ], [ ], [1,2,3,4], [ ], [ ]],
+	        [[ ], [3], [1,2,3], [ ], [ ]],
+	        [[ ], [2,3], [1,2], [ ], [ ]],
+	        [[ ], [1], [1,2,3,4], [ ], [ ]],
+	        [[ ], [2], [2], [1,2,3 ], [ ]],
+	        [[2], [2], [2,3,4], [ ], [ ]],
+	        [[ ], [ ], [2,3,4], [1,2 ], [ ]],
+	        [[ ], [3], [1,2,3], [1], [ ]],
+	        [[2], [2], [2], [2], [2]],
+	        [[ ], [2], [2,3], [2,3], [ ]],
+	        [[ ], [2,3], [1,2], [1], [ ]],
+	        [[ ], [2,3], [2], [2,3], [ ]],
+	        [[ ], [ 2,3], [1,2], [ 1], [ ]],
+	        [[ ], [2], [1,2,3], [2], [ ]],
+	        [[ ], [2], [1,2,3,4], [ ], [ ]]
+	    ];
+	};
+	
+	PresetPieces.prototype = {
+	    generatePieces: function() {
+	        var pieces = [];
+	        for (var i = 0; i < this.rels.length; i++) {
+	            pieces.push(new GamePiece(this.rels[i]));
+	        }
+	        return pieces;
+	    }
+	};
+	
+	module.exports = PresetPieces;
+	
+	// ONE           = [[ ],
+	//                  [ ],
+	//                  [2],
+	//                  [ ],
+	//                  [ ]];
+	//
+	// TWO           = [[ ],
+	//                 [ ],
+	//                 [2,3],
+	//                 [ ],
+	//                 [ ]];
+	//
+	// THREE         = [[ ],
+	//                  [ ],
+	//                  [1,2],
+	//                  [ 2],
+	//                  [ ]];
+	//
+	// FOUR            = [[ ],
+	//                   [ ],
+	//                   [1,2,3],
+	//                   [ ],
+	//                   [ ]];
+	//
+	// FIVE          = [[ ],
+	//                  [ 2,3],
+	//                  [2,3],
+	//                  [ ],
+	//                  [ ]];
+	//
+	// SIX          = [[ ],
+	//                 [ 2],
+	//                 [1,2,3],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// SEVEN        = [[ ],
+	//                 [ ],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]];
+	//
+	// EIGHT        = [[ ],
+	//                 [ 3],
+	//                 [1,2,3],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// NINE         = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// TEN          = [[ ],
+	//                 [ 1],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// ELEVEN        = [[ ],
+	//                 [ 2],
+	//                 [2],
+	//                 [1,2,3 ],
+	//                 [ ]]
+	//
+	// TWELVE       = [[2 ],
+	//                 [ 2],
+	//                 [2,3,4],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// THIRTEEN     = [[ ],
+	//                 [ ],
+	//                 [2,3,4],
+	//                 [1,2 ],
+	//                 [ ]]
+	//
+	// FOURTEEN     = [[ ],
+	//                 [ 3],
+	//                 [1,2,3],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// FIFTEEN      = [[ 2],
+	//                 [ 2],
+	//                 [2],
+	//                 [ 2],
+	//                 [ 2]]
+	//
+	// SIXTEEN      = [[ ],
+	//                 [ 2],
+	//                 [2,3],
+	//                 [ 2,3],
+	//                 [ ]]
+	//
+	// SEVENTEEN    = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// EIGHTEEN     = [[ ],
+	//                 [ 2,3],
+	//                 [2],
+	//                 [ 2,3],
+	//                 [ ]]
+	//
+	// NINETEEN     = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// TWENTY       = [[ ],
+	//                 [ 2],
+	//                 [1,2,3],
+	//                 [ 2],
+	//                 [ ]]
+	//
+	// TWENTY-ONE   = [[ ],
+	//                 [ 2],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]]
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	var User = function(name, colour) {
+	    this.name = name;
+	    this.colour = colour;
+	    this.pieces = [];
+	    this.selectedPieceIndex = null;
+	};
+	
+	User.prototype = {
+	
+	    colourCode: function() {
+	        return this.colour[0].toUpperCase();
+	    },
+	    selectPiece: function(pieceIndex) {
+	        if (this.pieces[pieceIndex]) {
+	            this.selectedPieceIndex = pieceIndex;
+	        }
+	    },
+	    getSelectedPiece: function() {
+	        return this.pieces[this.selectedPieceIndex];
+	    },
+	    removeSelectedPiece: function() {
+	        this.pieces.splice(this.selectedPieceIndex, 1);
+	        this.selectPiece = null;
+	    }
+	};
+	
+	module.exports = User;
 
 
 /***/ }

@@ -14,7 +14,7 @@ RenderEngine.prototype = {
     fillBoard: function(board) {
         for (var y = 0; y < board.length; y++) {
             for (var x = 0; x < board[y].length; x++) {
-                this.fillBox(x,y,board[y][x]);
+                this.fillBox(x,y,this.getUserColour(board[y][x]));
             }
         }
     },
@@ -25,19 +25,20 @@ RenderEngine.prototype = {
         return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
     },
     redraw: function(board, mouseEvent, userColour, piece) {
+        var curPos = null;
         if (mouseEvent) {
-            var curPos = this.getMousePos(mouseEvent);
+            curPos = this.getMousePos(mouseEvent);
         }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.fillBoard(board);
-        if (curPos && piece) {
+        if (curPos &&  userColour &&piece) {
             this.highlightBox(curPos, userColour, piece);
         }
         this.drawGrid();
     },
     highlightBox: function(pos, userColour, piece) {
         this.context.beginPath();
-        this.context.strokeStyle = userColour;
+        this.context.strokeStyle = this.getUserColour(userColour);
         this.context.lineWidth = this.scale / 5;
         var x = pos.x - 2;
         var y = pos.y - 2;
@@ -88,6 +89,18 @@ RenderEngine.prototype = {
             i = i + this.scale;
         }
         this.context.stroke();
+    },
+    getUserColour: function(colour) {
+        switch (colour) {
+            case 'R':
+                return 'red';
+            case 'G':
+                return 'green';
+            case 'B':
+                return 'blue';
+            case 'Y':
+                return 'yellow';
+        }
     }
 };
 

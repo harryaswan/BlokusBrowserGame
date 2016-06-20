@@ -126,8 +126,7 @@
 	                }
 	            }
 	        }
-	        console.log(corners);
-	        return corners;
+	        return this.unique(corners);
 	    },
 	
 	    flats: function(centerY, centerX) {
@@ -147,19 +146,49 @@
 	                          flatsArray.push([centerY + y, centerX + x - 1]);
 	                      }
 	
-	                      if (!this.array[y + 1][x]) {
+	                      if (this.array[y + 1]){
+	                        if (!this.array[y + 1][x] || this.array[y + 1][x] === undefined) {
 	                          flatsArray.push([centerY + y + 1, centerX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([centerY + y + 1, centerX + x]);
 	                      }
 	
-	                      if (!this.array[y][x]) {
+	
+	                      if (this.array[y - 1]){
+	                        if (!this.array[y - 1][x] || this.array[y - 1][x] === undefined) {
 	                          flatsArray.push([centerY + y - 1, centerX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([centerY + y - 1, centerX + x]);
 	                      }
 	                }
 	            }
 	        }
-	        console.log(flatsArray);
-	        return flatsArray;
+	        return this.unique(flatsArray);
 	    },
+	
+	    unique: function(array){
+	       var uniqueArray = [];
+	       for (item of array){
+	          if (!this.isItemInArray(uniqueArray, item)){
+	            uniqueArray.push(item);
+	          }
+	       }
+	       return uniqueArray;
+	    },
+	
+	  isItemInArray: function(array, item) {
+	        for (var i = 0; i < array.length; i++) {
+	            // This if statement depends on the format of your array
+	            if (array[i][0] == item[0] && array[i][1] == item[1]) {
+	                return true;   // Found it
+	            }
+	        }
+	        return false;   // Not found
+	    },
+	
+	
 	
 	
 	    rotate: function() {

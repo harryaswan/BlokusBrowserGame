@@ -55,6 +55,7 @@
 	        [2,3],
 	        []
 	    ];
+	
 	    var piece = new GamePiece(rel);
 	
 	    var board = generateArray();

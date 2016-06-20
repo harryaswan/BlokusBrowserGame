@@ -125,9 +125,6 @@ TWENTY-ONE   = [[ ],
                 [ ]] 
 
 
-for (array of input) {
-    if (array.length > 0) {}
-}
 
 
 

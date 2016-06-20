@@ -9,6 +9,7 @@ window.onload = function(e) {
         [2,3],
         []
     ];
+
     var piece = new GamePiece(rel);
 
     var board = generateArray();

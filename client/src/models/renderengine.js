@@ -25,7 +25,9 @@ RenderEngine.prototype = {
         return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
     },
     redraw: function(board, mouseEvent, userColour, piece) {
-        var curPos = render.getMousePos(mouseEvent);
+        if (mouseEvent) {
+            var curPos = this.getMousePos(mouseEvent);
+        }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.fillBoard(board);
         if (curPos && piece) {

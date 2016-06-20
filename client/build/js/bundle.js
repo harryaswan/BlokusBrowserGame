@@ -45,6 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var GamePiece = __webpack_require__(1);
+	var RenderEngine = __webpack_require__(2);
 	
 	window.onload = function(e) {
 	    var rel = [
@@ -55,7 +56,39 @@
 	        []
 	    ];
 	    var piece = new GamePiece(rel);
-	    console.log('arr', piece.array);
+	
+	    var board = generateArray();
+	    var canvas = document.getElementById('gameboard');
+	    var render = new RenderEngine(canvas, 600);
+	
+	    render.redraw(board);
+	
+	    console.log(render);
+	
+	    console.log(canvas);
+	
+	    canvas.addEventListener('click', function(e) {
+	        var cPos = render.getMousePos(e);
+	        board[cPos.y][cPos.x] = "blue"; // grab colour from current user
+	        render.redraw(board, e);
+	    });
+	
+	    canvas.addEventListener('mousemove', function(e) {
+	        var userColour = "green"; // grab colour from current user
+	        render.redraw(board, e, userColour, rel);
+	    });
+	
+	
+	};
+	var generateArray = function(){
+	    var array = new Array(20);
+	    for (var i = 0; i < 20; i++) {
+	      array[i] = new Array(20);
+	      for (var j = 0; j < 20; j++) {
+	          array[i][j] = 'white';
+	      }
+	    }
+	    return array;
 	};
 
 
@@ -126,8 +159,7 @@
 	                }
 	            }
 	        }
-	        console.log(corners);
-	        return corners;
+	        return this.unique(corners);
 	    },
 	
 	    flats: function(centerY, centerX) {
@@ -147,19 +179,49 @@
 	                          flatsArray.push([centerY + y, centerX + x - 1]);
 	                      }
 	
-	                      if (!this.array[y + 1][x]) {
+	                      if (this.array[y + 1]){
+	                        if (!this.array[y + 1][x] || this.array[y + 1][x] === undefined) {
 	                          flatsArray.push([centerY + y + 1, centerX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([centerY + y + 1, centerX + x]);
 	                      }
 	
-	                      if (!this.array[y-1][x]) { // TODO: This will break because y-1 is undefined and cannot get x of undefined
+	                      if (this.array[y - 1]){
+	                        if (!this.array[y - 1][x] || this.array[y - 1][x] === undefined) {
+	
 	                          flatsArray.push([centerY + y - 1, centerX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([centerY + y - 1, centerX + x]);
 	                      }
 	                }
 	            }
 	        }
-	        console.log(flatsArray);
-	        return flatsArray;
+	        return this.unique(flatsArray);
 	    },
+	
+	    unique: function(array){
+	       var uniqueArray = [];
+	       for (item of array){
+	          if (!this.isItemInArray(uniqueArray, item)){
+	            uniqueArray.push(item);
+	          }
+	       }
+	       return uniqueArray;
+	    },
+	
+	  isItemInArray: function(array, item) {
+	        for (var i = 0; i < array.length; i++) {
+	            // This if statement depends on the format of your array
+	            if (array[i][0] == item[0] && array[i][1] == item[1]) {
+	                return true;   // Found it
+	            }
+	        }
+	        return false;   // Not found
+	    },
+	
+	
 	
 	
 	    rotate: function() {
@@ -222,6 +284,126 @@
 	//     rotatedArray[i].push(this.Array[i][i]);
 	//     i++;
 	// }
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	var RenderEngine = function(element, heightWidth) {
+	    this.canvas = element;
+	    this.canvas.height = heightWidth;
+	    this.canvas.width = heightWidth;
+	    this.context = this.canvas.getContext('2d');
+	    this.scale = heightWidth / 20;
+	};
+	
+	RenderEngine.prototype = {
+	    fillBox: function(x, y, colour) {
+	        this.context.fillStyle = colour;
+	        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
+	    },
+	    fillBoard: function(board) {
+	        for (var y = 0; y < board.length; y++) {
+	            for (var x = 0; x < board[y].length; x++) {
+	                this.fillBox(x,y,board[y][x]);
+	            }
+	        }
+	    },
+	    getMousePos: function(e) {
+	        var rect = this.canvas.getBoundingClientRect();
+	        x = e.clientX - rect.left;
+	        y = e.clientY - rect.top;
+	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
+	    },
+	    redraw: function(board, mouseEvent, userColour, piece) {
+	        if (mouseEvent) {
+	            var curPos = this.getMousePos(mouseEvent);
+	        }
+	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	        this.fillBoard(board);
+	        if (curPos && piece) {
+	            this.highlightBox(curPos, userColour, piece);
+	        }
+	        this.drawGrid();
+	    },
+	    highlightBox: function(pos, userColour, piece) {
+	        this.context.beginPath();
+	        this.context.strokeStyle = userColour;
+	        this.context.lineWidth = this.scale / 5;
+	        var x = pos.x - 2;
+	        var y = pos.y - 2;
+	        for (var i = 0; i < piece.length; i++) {
+	            if (piece[i]) {
+	                for (var j = 0; j < piece[i].length; j++) {
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'top');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'bottom');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'left');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'right');
+	                }
+	            }
+	        }
+	        this.context.stroke();
+	        this.context.lineWidth = 1;
+	    },
+	    drawBoxPart: function(x, y, box) {
+	        x *= this.scale;
+	        y *= this.scale;
+	        switch (box) {
+	            case 'top':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + 1);
+	                break;
+	            case 'left':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + 1, y + (this.scale-1));
+	                break;
+	            case 'right':
+	                this.context.moveTo(x + (this.scale-1), y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	            case 'bottom':
+	                this.context.moveTo(x + 1, y + (this.scale-1));
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	        }
+	    },
+	    drawGrid: function() {
+	        this.context.beginPath();
+	        var i = 0;
+	        while ( i <= this.canvas.width ) {
+	            this.context.strokeStyle = "black";
+	            this.context.moveTo(i,0);
+	            this.context.lineTo(i, this.canvas.height);
+	            this.context.moveTo(0,i);
+	            this.context.lineTo(this.canvas.width, i);
+	            i = i + this.scale;
+	        }
+	        this.context.stroke();
+	    }
+	};
+	
+	module.exports = RenderEngine;
+	
+	// canvas.addEventListener('mousemove', function(e) {
+	//     var pieceRel = [
+	//         [2],
+	//         [2],
+	//         [2],
+	//         [2,3],
+	//         []
+	//     ];
+	//     var userColour = "green"; // grab colour from current user
+	//
+	//     render.redraw(board, e, userColour, pieceRel);
+	// });
+	//
+	// canvas.addEventListener('click', function(e) {
+	//     var cPos = render.getMousePos(e);
+	//     board[cPos.y][cPos.x] = "blue"; // grab colour from current user
+	//     console.log(board);
+	//     render.redraw(board, e);
+	// });
 
 
 /***/ }

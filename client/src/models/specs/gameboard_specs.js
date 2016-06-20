@@ -8,17 +8,16 @@ describe('GameBoard', function() {
         board = new GameBoard();
 
     });
-    it('has a board array which is an array of twenty arrays of twenty empty arrays!', function() {
+    it('has a board array which is an array of twenty arrays of twenty nulls!', function() {
 
         assert.equal(20, board.boardArray.length);
         assert.equal(20, board.boardArray[0].length);
-        assert.equal(0, board.boardArray[0][0].length);
+        assert.equal(null, board.boardArray[0][0]);
     });
     it('can colour a square when provided with a colour and coordinates', function() {
 
         board.fill([9,7], 'R');
-        console.log(board.boardArray[9][7][0]);
-        assert.equal('R', board.boardArray[9][7][0]);
+        assert.equal('R', board.boardArray[9][7]);
     });
     it('can determine if a given coordinate pair falls within the bounds of its board array', function() {
 
@@ -30,16 +29,31 @@ describe('GameBoard', function() {
         var coordsList = [[2,1], [-2,3], [-2,-3], [2,-3], [10,20], [20, 10], [20,20]];
         var coordsInBounds = board.listInBounds(coordsList);
         assert.equal(1, coordsInBounds.length);
-        assert.deepEqual([2,1], coordsInBounds[0]);
+        assert.deepEqual([[2,1]], coordsInBounds);
     });
-    it('can tell when an overlap exists at a given square', function() {
+    it('can tell when a given square is already filled', function() {
 
+        board.fill([9,7], 'R');
+        assert.equal(false, board.checkSquare([9,7]));
     });
     it('can tell when a placed piece is overlapping one or more occupied squares', function() {
 
+        board.fill([9,7], 'R');
+        var coordPairs = [
+            [9,7],
+            [10,10]
+        ];
+        assert.equal(true, board.checkSquareList(coordPairs));
     });
     it('can decide if a piece placement meets the corner requirement', function() {
 
+        var corners = [
+            [7, 11],
+            [7, 9],
+            [12, 9],
+            [12, 12],
+            [10, 12]
+        ];
     });
     it('can decide if a piece placement meets the edge requirement', function() {
 

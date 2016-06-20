@@ -31,10 +31,13 @@ GameBoard.prototype = {
         this.updateColourCount(colourString);
     },
     inBounds: function(coordinates) {
-        if (this.boardArray[coordinates[0]] && this.boardArray[coordinates[0]][coordinates[1]]) {
-        return true;
-      }
-        else {
+        if (this.boardArray[coordinates[0]]) {
+            if (!(this.boardArray[coordinates[0]][coordinates[1]] === undefined)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
     },
@@ -62,6 +65,37 @@ GameBoard.prototype = {
                 this.yellowCount += 1;
                 break;
         }
+    },
+    checkSquare: function(coordinatePair, userColour) {
+        var square = this.boardArray[coordinatePair[0]][coordinatePair[1]];
+        
+        if (userColour) {
+            if (square === userColour) {
+                return true;
+            }
+        } else {
+            if (square === undefined) {
+                return true;
+            }
+        }
+        return false;
+    },
+    checkSquaresAvailable: function(coordinatesList) {
+        for (coordPair of coordinatesList) {
+            if (!this.checkSquare(coordPair)) {
+                return false;
+            }
+        }
+        return true;
+    },
+    checkCorners: function (coordinatesList, userColour) {
+        var foundValidCorner = false;
+        for (coordPair of coordinatesList) {
+            if (this.checkSquare(coordPair, userColour)) {
+                foundValidCorner = true;
+            }
+        }
+        return foundValidCorner;  
     }
 };
 

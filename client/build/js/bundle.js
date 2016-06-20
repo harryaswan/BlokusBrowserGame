@@ -201,6 +201,20 @@
 	        return this.unique(flatsArray);
 	    },
 	
+	    covered: function(centerY, centerX) {
+	        centerY = centerY - 2;
+	        centerX = centerX - 2;
+	        coveredSquares = [];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	                if (this.array[y][x]) {
+	                    coveredSquares.push([centerY + y, centerX + x]);
+	                }
+	            }
+	        }
+	        return coveredSquares;
+	    },
+	
 	    unique: function(array){
 	       var uniqueArray = [];
 	       for (item of array){

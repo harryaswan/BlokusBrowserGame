@@ -12,7 +12,6 @@ var GameBoard = function() {
 
 GameBoard.prototype = {
     placePiece: function(piece, pivotPoint) {
-        console.log(piece.array);
         var x = pivotPoint[0];
         var y = pivotPoint[1];
     },
@@ -50,6 +49,16 @@ GameBoard.prototype = {
         }
         return inBoundsCoords;
     },
+
+    isInBounds: function(coordinatesList){
+        if(this.listInBounds(coordinatesList).length === coordinatesList.length){
+            return true;
+        } else {
+            return false;
+        }
+
+    },
+
     updateColourCount: function(colourString) {
         switch(colourString) {
             case "R":
@@ -68,13 +77,12 @@ GameBoard.prototype = {
     },
     checkSquare: function(coordinatePair, userColour) {
         var square = this.boardArray[coordinatePair[0]][coordinatePair[1]];
-        
         if (userColour) {
             if (square === userColour) {
                 return true;
             }
         } else {
-            if (square === undefined) {
+            if (!square) {
                 return true;
             }
         }
@@ -96,6 +104,32 @@ GameBoard.prototype = {
             }
         }
         return foundValidCorner;  
+    },
+
+    checkEdges: function( coordinatesList, userColour) {
+        return !this.checkCorners(coordinatesList, userColour);
+    },
+
+    isLegal: function( coordinates, piece, userColour ){
+        if(this.isInBounds(piece.covered(coordinates[0], coordinates[1]))){
+            if(this.checkSquaresAvailable(piece.covered(coordinates[0], coordinates[1]))){
+                if(this.checkEdges(piece.flats(coordinates[0], coordinates[1]), userColour)){
+                    if(this.checkCorners(piece.corners(coordinates[0], coordinates[1]), userColour)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    },
+
+    cornerSquare: function( coordinatesList ){
+        for( var item of coordinatesList ){
+            if( (item[0] === 0 && item[1] === 0) || ( item[0] === 0 && item[1] === 19) || (item[0] === 19 && item[1] === 0) || (item[0] === 19 && item[1] === 19)){
+                return true;
+            }   
+        }
+        return false;
     }
 };
 

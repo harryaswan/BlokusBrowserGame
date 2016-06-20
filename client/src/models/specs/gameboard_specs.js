@@ -4,6 +4,14 @@ var GamePiece = require('../gamepiece.js');
 
 describe('GameBoard', function() {
     beforeEach(function(){
+        var rel = [
+            [2],
+            [2],
+            [2],
+            [2,3],
+            []
+        ];
+        piece = new GamePiece(rel);
         
         board = new GameBoard();
 
@@ -43,10 +51,10 @@ describe('GameBoard', function() {
             [9,7],
             [10,10]
         ];
-        assert.equal(true, board.checkSquareList(coordPairs));
+        assert.equal(false, board.checkSquaresAvailable(coordPairs));
     });
     it('can decide if a piece placement meets the corner requirement', function() {
-
+        board.fill([12, 9], 'R');
         var corners = [
             [7, 11],
             [7, 9],
@@ -54,14 +62,38 @@ describe('GameBoard', function() {
             [12, 12],
             [10, 12]
         ];
+        assert.equal(true, board.checkCorners (corners, 'R'));
     });
     it('can decide if a piece placement meets the edge requirement', function() {
 
+        var flats = [
+            [8, 11],
+            [8, 9],
+            [7, 10],
+            [9, 11],
+            [9, 9],
+            [10, 11],
+            [10, 9],
+            [11, 9],
+            [12, 10],
+            [11, 12],
+            [12, 11]
+
+        ];
+        assert.equal(true, board.checkEdges(flats, 'R'));
+        board.fill([12, 10], 'R');
+        assert.equal(false, board.checkEdges(flats, 'R'));
+
+
     });
     it('can decide if a placement is legal', function() {
+        board.fill([10,12], 'R');
+        assert.equal(true, board.isLegal([10, 10], piece, 'R'));
+
 
     });
     it('can update its array if a placement is legal', function() {
+
 
     });
     it('adds one to the appropriate colour count when a square is filled with a colour', function() {
@@ -70,6 +102,10 @@ describe('GameBoard', function() {
         assert.equal(1, board.redCount);
     });
     it('knows when a placed piece will occupy a corner square', function() {
+        piece.flip();
+        var covered = piece.covered(1, 18);       
+
+        assert.equal(true, board.cornerSquare(covered));
 
     });
 

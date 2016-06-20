@@ -35,7 +35,7 @@ describe('GamePiece', function() {
             [12, 12],
             [10, 12]
         ];
-        var pieceCorners = piece.corners(10, 10);
+        var pieceCorners = piece.corners([10, 10]);
         assert.deepEqual(corners, pieceCorners);
     });
 
@@ -55,7 +55,7 @@ describe('GamePiece', function() {
             [12, 11]
 
         ];
-        var pieceFlats = piece.flats(10, 10);
+        var pieceFlats = piece.flats([10, 10]);
         assert.deepEqual(flats, pieceFlats);
     });
 
@@ -69,7 +69,7 @@ describe('GamePiece', function() {
             [11,11]
         ];
 
-        var pieceCovered = piece.covered(10,10);
+        var pieceCovered = piece.covered([10,10]);
         assert.deepEqual(covered, pieceCovered);
     });
 

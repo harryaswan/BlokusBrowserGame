@@ -98,15 +98,19 @@ GameBoard.prototype = {
     },
 
     isLegal: function( coordinates, piece, userColour ){
+        console.log(this[userColour], 'colour');
         if (this[userColour] === 0) {
-            if(!this.cornerSquare(piece.covered(coordinates[0], coordinates[1]))) {
+
+            if(!this.cornerSquare(piece.covered(coordinates))) {
                 return false;
             }
         }
-        if(this.isInBounds(piece.covered(coordinates[0], coordinates[1]))){
-            if(this.checkSquaresAvailable(piece.covered(coordinates[0], coordinates[1]))){
-                if(this.checkEdges(piece.flats(coordinates[0], coordinates[1]), userColour)){
-                    if(this.checkCorners(piece.corners(coordinates[0], coordinates[1]), userColour)){
+        if(this.isInBounds(piece.covered(coordinates))){
+            if(this.checkSquaresAvailable(piece.covered(coordinates))){
+                var inBounds = this.listInBounds(piece.flats(coordinates));
+                if (this.checkEdges(inBounds, userColour)){
+                // if(this.checkEdges(piece.flats(coordinates), userColour)){
+                    if(this.checkCorners(this.listInBounds(piece.corners(coordinates), userColour))){
                         return true;
                     }
                 }
@@ -122,6 +126,15 @@ GameBoard.prototype = {
             }
         }
         return false;
+    },
+
+    placePiece: function(coordinates, piece, userColour){
+        if (this.isLegal(coordinates, piece, userColour)) {
+            for (pair of piece.covered(coordinates)) {
+                this.fill(pair, userColour);
+                console.log('hello', pair);
+            }
+        }
     }
 };
 

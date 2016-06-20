@@ -117,9 +117,9 @@
 	    changeTile: function(x, y, value) {
 	        this.array[y][x] = value;
 	    },
-	    corners: function(centerY, centerX) {
-	        centerY = centerY - 2;
-	        centerX = centerX - 2;
+	    corners: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
 	        var corners = [];
 	        for (var y = 0; y < this.array.length; y++) {
 	            for (var x = 0; x < this.array[y].length; x++) {
@@ -127,33 +127,33 @@
 	                if (this.array[y][x]) {
 	                    if (this.array[y + 1]) {
 	                        if (!this.array[y][x + 1] && !this.array[y + 1][x]) {
-	                            corners.push([centerY + y + 1, centerX + x + 1]);
+	                            corners.push([startY + y + 1, startX + x + 1]);
 	                        }
 	                        if (!this.array[y][x - 1] && !this.array[y + 1][x]) {
-	                            corners.push([centerY + y + 1, centerX + x - 1]);
+	                            corners.push([startY + y + 1, startX + x - 1]);
 	                        }
 	                    } else if (this.array[y + 1] === undefined) {
 	                        if (!this.array[y][x + 1]) {
-	                            corners.push([centerY + y + 1, centerX + x + 1]);
+	                            corners.push([startY + y + 1, startX + x + 1]);
 	                        }
 	                        if (!this.array[y][x - 1]) {
-	                            corners.push([centerY + y + 1, centerX + x - 1]);
+	                            corners.push([startY + y + 1, startX + x - 1]);
 	                        }
 	                    }
 	
 	                    if (this.array[y - 1]) {
 	                        if (!this.array[y][x + 1] && !this.array[y - 1][x]) {
-	                            corners.push([centerY + y - 1, centerX + x + 1]);
+	                            corners.push([startY + y - 1, startX + x + 1]);
 	                        }
 	                        if (!this.array[y][x - 1] && !this.array[y - 1][x]) {
-	                            corners.push([centerY + y - 1, centerX + x - 1]);
+	                            corners.push([startY + y - 1, startX + x - 1]);
 	                        }
 	                    } else if (this.array[y -1] === undefined) {
 	                        if (!this.array[y][x + 1]) {
-	                            corners.push([centerY + y - 1, centerX + x + 1]);
+	                            corners.push([startY + y - 1, startX + x + 1]);
 	                        }
 	                        if (!this.array[y][x - 1]) {
-	                            corners.push([centerY + y - 1, centerX + x - 1]);
+	                            corners.push([startY + y - 1, startX + x - 1]);
 	                        }
 	                    }
 	                }
@@ -162,9 +162,9 @@
 	        return this.unique(corners);
 	    },
 	
-	    flats: function(centerY, centerX) {
-	        centerY = centerY - 2;
-	        centerX = centerX - 2;
+	    flats: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
 	        var flatsArray = [];
 	        for (var y = 0; y < this.array.length; y++) {
 	            for (var x = 0; x < this.array[y].length; x++) {
@@ -172,28 +172,28 @@
 	                if (this.array[y][x]) {
 	
 	                      if (!this.array[y][x + 1]) {
-	                          flatsArray.push([centerY + y, centerX + x + 1]);
+	                          flatsArray.push([startY + y, startX + x + 1]);
 	                      }
 	
 	                      if (!this.array[y][x - 1]) {
-	                          flatsArray.push([centerY + y, centerX + x - 1]);
+	                          flatsArray.push([startY + y, startX + x - 1]);
 	                      }
 	
 	                      if (this.array[y + 1]){
 	                        if (!this.array[y + 1][x] || this.array[y + 1][x] === undefined) {
-	                          flatsArray.push([centerY + y + 1, centerX + x]);
+	                          flatsArray.push([startY + y + 1, startX + x]);
 	                        }
 	                      }else{
-	                        flatsArray.push([centerY + y + 1, centerX + x]);
+	                        flatsArray.push([startY + y + 1, startX + x]);
 	                      }
 	
 	                      if (this.array[y - 1]){
 	                        if (!this.array[y - 1][x] || this.array[y - 1][x] === undefined) {
 	
-	                          flatsArray.push([centerY + y - 1, centerX + x]);
+	                          flatsArray.push([startY + y - 1, startX + x]);
 	                        }
 	                      }else{
-	                        flatsArray.push([centerY + y - 1, centerX + x]);
+	                        flatsArray.push([startY + y - 1, startX + x]);
 	                      }
 	                }
 	            }
@@ -201,14 +201,14 @@
 	        return this.unique(flatsArray);
 	    },
 	
-	    covered: function(centerY, centerX) {
-	        centerY = centerY - 2;
-	        centerX = centerX - 2;
+	    covered: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
 	        coveredSquares = [];
 	        for (var y = 0; y < this.array.length; y++) {
 	            for (var x = 0; x < this.array[y].length; x++) {
 	                if (this.array[y][x]) {
-	                    coveredSquares.push([centerY + y, centerX + x]);
+	                    coveredSquares.push([startY + y, startX + x]);
 	                }
 	            }
 	        }

@@ -89,12 +89,11 @@ describe('GameBoard', function() {
     it('can decide if a placement is legal', function() {
         board.fill([10,12], 'R');
         assert.equal(true, board.isLegal([10, 10], piece, 'R'));
-
-
     });
     it('can update its array if a placement is legal', function() {
 
-
+        board.placePiece([2,0], piece, 'R');
+        assert.equal(5, board['R']);
     });
     it('adds one to the appropriate colour count when a square is filled with a colour', function() {
 
@@ -103,7 +102,7 @@ describe('GameBoard', function() {
     });
     it('knows when a placed piece will occupy a corner square', function() {
         piece.flip();
-        var covered = piece.covered(1, 18);
+        var covered = piece.covered([1, 18]);
 
         assert.equal(true, board.cornerSquare(covered));
 

@@ -98,7 +98,6 @@ GameBoard.prototype = {
     },
 
     isLegal: function( coordinates, piece, userColour ){
-        console.log(this[userColour], 'colour');
         if (this[userColour] === 0) {
 
             if(!this.cornerSquare(piece.covered(coordinates))) {
@@ -107,10 +106,8 @@ GameBoard.prototype = {
         }
         if(this.isInBounds(piece.covered(coordinates))){
             if(this.checkSquaresAvailable(piece.covered(coordinates))){
-                var inBounds = this.listInBounds(piece.flats(coordinates));
-                if (this.checkEdges(inBounds, userColour)){
-                // if(this.checkEdges(piece.flats(coordinates), userColour)){
-                    if(this.checkCorners(this.listInBounds(piece.corners(coordinates), userColour))){
+                if(this.checkEdges(this.listInBounds(piece.flats(coordinates)), userColour)){                
+                    if(this[userColour] === 0 || this.checkCorners(this.listInBounds(piece.corners(coordinates)), userColour)){
                         return true;
                     }
                 }
@@ -132,7 +129,6 @@ GameBoard.prototype = {
         if (this.isLegal(coordinates, piece, userColour)) {
             for (pair of piece.covered(coordinates)) {
                 this.fill(pair, userColour);
-                console.log('hello', pair);
             }
         }
     }

@@ -24,4 +24,9 @@ window.onload = function(e) {
             console.log('flip');
         }
     });
+
+    document.getElementById('skip_button').addEventListener('click', function(e) {
+        console.log('skip/end play');
+        game.skipTurn();
+    });
 };

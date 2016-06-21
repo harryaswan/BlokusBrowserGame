@@ -3,6 +3,7 @@ var User = function(name, colour) {
     this.colour = colour;
     this.pieces = [];
     this.selectedPieceIndex = 0;
+    this.playing = true;
 };
 
 User.prototype = {
@@ -27,6 +28,12 @@ User.prototype = {
     removeSelectedPiece: function() {
         this.pieces.splice(this.selectedPieceIndex, 1);
         this.selectPiece = null;
+        if (this.pieces.length === 0) {
+            this.playing = false;
+        }
+    },
+    endPlay: function() {
+        this.playing = false;
     }
 };
 

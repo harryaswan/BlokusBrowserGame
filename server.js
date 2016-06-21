@@ -11,25 +11,26 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
-app.post('/log', function(req, res) {
+app.post('/savelog', function(req, res) {
     var data = req.body.data;
     var gameID = req.body.game;
     console.log(data);
     console.log(gameID);
     MongoClient.connect(url, function(err, db) {
         var collection = db.collection('game_logs');
-        collection.update({game: gameID}, {data: data}, {upsert: true});
+        collection.update({game: gameID}, {game: gameID, data: data}, {upsert: true});
         db.close();
         res.status(200).end();
     });
 });
 
-app.get('/log', function(req, res) {
+app.post('/loadlog', function(req, res) {
     var gameID = req.body.game;
+    console.log('gid', gameID);
     MongoClient.connect(url, function(err, db) {
         var collection = db.collection('game_logs');
         collection.find({game: gameID}).toArray(function(err, docs) {
-            console.log('docs', docs)
+            console.log('docs', docs);
             res.json(docs);
             db.close();
         });

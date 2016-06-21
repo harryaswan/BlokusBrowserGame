@@ -1,19 +1,23 @@
 var GameBoard = require('./gameboard.js');
 var RenderEngine = require('./renderengine.js');
 var PresetPieces = require('./pieceRels.js');
-var Log = require('./log.js');
 var GamePiece = require('./gamepiece.js');
+var User = require('./user.js');
+var Log = require('./log.js');
 
 var Game = function(users, canvasElement, canvasWidth) {
-    this.users = users;
+    this.users = [];
     this.currentUser = 0;
     this.board = new GameBoard();
     this.render = new RenderEngine(canvasElement, canvasWidth);
     this.log = new Log();
-    this.assignPieces();
+
     this.playing = true;
     this.logPlaying = false;
     this.uID = parseInt(Math.random() * 10000);
+
+    this.createUsers(users);
+    this.assignPieces();
     this.logStartGame();
 };
 
@@ -24,6 +28,31 @@ Game.prototype = {
         for (var i = 0; i < this.users.length; i++) {
             this.log.addData('username', this.users[i].name);
         }
+        console.log("Your game id is:", this.uID);
+    },
+    createUsers: function(users) {
+        for (var i = 0; i < users.length; i++) {
+            this.createUser(users[i]);
+        }
+    },
+    createUser: function(user) {
+        var colour = null;
+        switch (this.users.length) {
+            case 0:
+                colour = "Blue";
+                break;
+            case 1:
+                colour = "Yellow";
+                break;
+            case 2:
+                colour = "Red";
+                break;
+            case 3:
+                colour = "Green";
+                break;
+        }
+        this.users.push(new User(user, colour));
+        this.assignPieces();
     },
     assignPieces: function() {
         for (var user of this.users) {
@@ -118,11 +147,41 @@ Game.prototype = {
     saveLog: function() {
         this.log.saveData();
     },
-    loadLog: function() {
-        this.log.loadData(this.playFromLog);
+    loadLog: function(uid) {
+        this.uID = uid;
+        this.log.setGameID(uid);
+        this.log.loadData(this.playFromLog, this);
     },
-    playFromLog: function(logData) {
-        console.log('logdata',logData);
+    playFromLog: function(logData, context) {
+        context.log.setData(logData.data);
+        context.users = [];
+        context.logPlaying = true;
+        context.playThrough(context);
+    },
+    playThrough: function(context) {
+        var data = context.log.grabData();
+        if (data) {
+            context.makeLogMove(data.action, data.options, context);
+            setTimeout(function() {
+                context.playThrough(context);
+            }, 500);
+        } else {
+            context.logPlaying = false;
+        }
+    },
+    makeLogMove: function(action, options, game) {
+        console.log('action', action);
+        switch (action) {
+            case 'place':
+                game.placePiece(options.pos, options.rel);
+                break;
+            case 'skip':
+                game.skipTurn();
+                break;
+            case 'username':
+                game.createUser(options);
+                break;
+        }
     }
 };
 

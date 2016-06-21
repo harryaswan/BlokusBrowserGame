@@ -30,8 +30,8 @@ Log.prototype = {
             if (request.status === 200) {
                 console.log('saved the data');
             }
-        }
-        request.open('POST', 'log');
+        };
+        request.open('POST', 'savelog');
         request.setRequestHeader('Content-Type', 'application/json');
         var data = {game: this.gameID, data: this.data};
         console.log(JSON.stringify(data));
@@ -43,11 +43,11 @@ Log.prototype = {
             if (request.status === 200) {
                 console.log('got the data');
                 console.log(request.responseText);
-                callback(JSON.parse(request.responseText));    
-                
+                callback(JSON.parse(request.responseText)[0], context);
             }
-        }
-        request.open('GET', 'log');
+        };
+        request.open('POST', 'loadlog');
+        request.setRequestHeader('Content-Type', 'application/json');
         request.send(JSON.stringify({game: this.gameID}));
     },
     setData: function(data) {

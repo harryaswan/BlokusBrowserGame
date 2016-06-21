@@ -50,7 +50,7 @@
 	window.onload = function(e) {
 	
 	    var canvas = document.getElementById('gameboard');
-	    var users = [new User("Jimmy", "Red"), new User("John", "Blue"), new User("Frank", "Green"), new User("Colin", "Yellow")];
+	    var users = ["Frank", "Jimmy", "Colin", "Dave"];
 	
 	    var game = new Game(users, canvas, 600);
 	    game.redraw();
@@ -78,6 +78,11 @@
 	    document.getElementById('skip_button').addEventListener('click', function(e) {
 	        console.log('skip/end play');
 	        game.skipTurn();
+	    });
+	
+	    document.getElementById('load_button').addEventListener('click', function(e) {
+	        console.log('load');
+	        game.loadLog(parseInt(document.getElementById('gameid_input').value));
 	    });
 	};
 
@@ -436,19 +441,23 @@
 	var GameBoard = __webpack_require__(4);
 	var RenderEngine = __webpack_require__(2);
 	var PresetPieces = __webpack_require__(5);
-	var Log = __webpack_require__(7);
 	var GamePiece = __webpack_require__(1);
+	var User = __webpack_require__(6);
+	var Log = __webpack_require__(7);
 	
 	var Game = function(users, canvasElement, canvasWidth) {
-	    this.users = users;
+	    this.users = [];
 	    this.currentUser = 0;
 	    this.board = new GameBoard();
 	    this.render = new RenderEngine(canvasElement, canvasWidth);
 	    this.log = new Log();
-	    this.assignPieces();
+	
 	    this.playing = true;
 	    this.logPlaying = false;
 	    this.uID = parseInt(Math.random() * 10000);
+	
+	    this.createUsers(users);
+	    this.assignPieces();
 	    this.logStartGame();
 	};
 	
@@ -459,6 +468,31 @@
 	        for (var i = 0; i < this.users.length; i++) {
 	            this.log.addData('username', this.users[i].name);
 	        }
+	        console.log("Your game id is:", this.uID);
+	    },
+	    createUsers: function(users) {
+	        for (var i = 0; i < users.length; i++) {
+	            this.createUser(users[i]);
+	        }
+	    },
+	    createUser: function(user) {
+	        var colour = null;
+	        switch (this.users.length) {
+	            case 0:
+	                colour = "Blue";
+	                break;
+	            case 1:
+	                colour = "Yellow";
+	                break;
+	            case 2:
+	                colour = "Red";
+	                break;
+	            case 3:
+	                colour = "Green";
+	                break;
+	        }
+	        this.users.push(new User(user, colour));
+	        this.assignPieces();
 	    },
 	    assignPieces: function() {
 	        for (var user of this.users) {
@@ -553,11 +587,41 @@
 	    saveLog: function() {
 	        this.log.saveData();
 	    },
-	    loadLog: function() {
-	        this.log.loadData(this.playFromLog);
+	    loadLog: function(uid) {
+	        this.uID = uid;
+	        this.log.setGameID(uid);
+	        this.log.loadData(this.playFromLog, this);
 	    },
-	    playFromLog: function(logData) {
-	        console.log('logdata',logData);
+	    playFromLog: function(logData, context) {
+	        context.log.setData(logData.data);
+	        context.users = [];
+	        context.logPlaying = true;
+	        context.playThrough(context);
+	    },
+	    playThrough: function(context) {
+	        var data = context.log.grabData();
+	        if (data) {
+	            context.makeLogMove(data.action, data.options, context);
+	            setTimeout(function() {
+	                context.playThrough(context);
+	            }, 500);
+	        } else {
+	            context.logPlaying = false;
+	        }
+	    },
+	    makeLogMove: function(action, options, game) {
+	        console.log('action', action);
+	        switch (action) {
+	            case 'place':
+	                game.placePiece(options.pos, options.rel);
+	                break;
+	            case 'skip':
+	                game.skipTurn();
+	                break;
+	            case 'username':
+	                game.createUser(options);
+	                break;
+	        }
 	    }
 	};
 	
@@ -974,8 +1038,8 @@
 	            if (request.status === 200) {
 	                console.log('saved the data');
 	            }
-	        }
-	        request.open('POST', 'log');
+	        };
+	        request.open('POST', 'savelog');
 	        request.setRequestHeader('Content-Type', 'application/json');
 	        var data = {game: this.gameID, data: this.data};
 	        console.log(JSON.stringify(data));
@@ -987,11 +1051,11 @@
 	            if (request.status === 200) {
 	                console.log('got the data');
 	                console.log(request.responseText);
-	                callback(JSON.parse(request.responseText));    
-	                
+	                callback(JSON.parse(request.responseText)[0], context);
 	            }
-	        }
-	        request.open('GET', 'log');
+	        };
+	        request.open('POST', 'loadlog');
+	        request.setRequestHeader('Content-Type', 'application/json');
 	        request.send(JSON.stringify({game: this.gameID}));
 	    },
 	    setData: function(data) {
@@ -1004,6 +1068,7 @@
 	
 	
 	module.exports = Log;
+
 
 /***/ }
 /******/ ]);

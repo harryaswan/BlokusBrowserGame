@@ -50,7 +50,7 @@
 	window.onload = function(e) {
 	
 	    var canvas = document.getElementById('gameboard');
-	    var users = [new User("Jimmy", "Red"), new User("John", "Blue")];//, new User("Frank", "Green"), new User("Colin", "Yellow")];
+	    var users = [new User("Jimmy", "Red"), new User("John", "Blue"), new User("Frank", "Green"), new User("Colin", "Yellow")];
 	
 	    var game = new Game(users, canvas, 600);
 	    game.redraw();
@@ -69,6 +69,11 @@
 	            game.flipPiece();
 	            console.log('flip');
 	        }
+	    });
+	
+	    document.getElementById('skip_button').addEventListener('click', function(e) {
+	        console.log('skip/end play');
+	        game.skipTurn();
 	    });
 	};
 
@@ -408,6 +413,7 @@
 	    this.board = new GameBoard();
 	    this.render = new RenderEngine(canvasElement, canvasWidth);
 	    this.assignPieces();
+	    this.playing = true;
 	};
 	
 	Game.prototype = {
@@ -418,37 +424,80 @@
 	        }
 	    },
 	    placePiece: function(e) {
-	        var cPos = this.render.getMousePos(e);
-	        var curUser = this.users[this.currentUser];
-	        if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
-	            curUser.removeSelectedPiece();
-	            this.render.redraw(this.board.boardArray);
-	            this.nextPlayer();
-	        } else {
-	            console.log('invalid move');
+	        if (this.playing) {
+	            var cPos = this.render.getMousePos(e);
+	            var curUser = this.users[this.currentUser];
+	            if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
+	                curUser.removeSelectedPiece();
+	                this.render.redraw(this.board.boardArray);
+	                this.nextPlayer();
+	            } else {
+	                console.log('invalid move');
+	            }
 	        }
 	    },
 	    nextPlayer: function() {
-	        this.currentUser++;
-	        if (this.currentUser >= this.users.length) {
-	            this.currentUser = 0;
+	        if (this.checkPlayersPlaying()) {
+	            this.currentUser++;
+	            if (this.currentUser >= this.users.length) {
+	                this.currentUser = 0;
+	            }
+	            console.log('curP',this.currentUser);
+	            if (!this.checkPlayerPlaying(this.currentUser)) {
+	                this.nextPlayer();
+	            }
+	        } else {
+	            console.log("EveryOne Done");
+	            this.playing = false;
+	            this.render.redraw(this.board.boardArray);
+	            alert('Game over');
 	        }
+	
+	    },
+	    checkPlayerPlaying: function(index) {
+	        return this.users[index].playing;
+	    },
+	    checkPlayersPlaying: function() {
+	        var count = 0;
+	        for (var i = 0; i < this.users.length; i++) {
+	            console.log('i:',i,'cpp:',this.checkPlayerPlaying(i));
+	            if (!this.checkPlayerPlaying(i)) {
+	                count++;
+	                console.log('count', count);
+	            }
+	        }
+	        if (count < this.users.length) {
+	            return true;
+	        }
+	        return false;
 	    },
 	    currUser: function() {
 	        return this.users[this.currentUser];
 	    },
 	    onHover: function(e) {
-	        var curUser = this.currUser();
-	        this.render.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+	        if (this.playing) {
+	            var curUser = this.currUser();
+	            this.render.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+	        }
 	    },
 	    rotatePiece: function() {
-	        this.currUser().rotatePiece();
+	        if (this.playing) {
+	            this.currUser().rotatePiece();
+	        }
 	    },
 	    flipPiece: function() {
-	        this.currUser().flipPiece();
+	        if (this.playing) {
+	            this.currUser().flipPiece();
+	        }
 	    },
 	    redraw: function() {
 	        this.render.redraw(this.board.boardArray);
+	    },
+	    skipTurn: function() {
+	        if (this.playing) {
+	            this.currUser().endPlay();
+	            this.nextPlayer();
+	        }
 	    }
 	};
 	
@@ -792,6 +841,7 @@
 	    this.colour = colour;
 	    this.pieces = [];
 	    this.selectedPieceIndex = 0;
+	    this.playing = true;
 	};
 	
 	User.prototype = {
@@ -816,6 +866,12 @@
 	    removeSelectedPiece: function() {
 	        this.pieces.splice(this.selectedPieceIndex, 1);
 	        this.selectPiece = null;
+	        if (this.pieces.length === 0) {
+	            this.playing = false;
+	        }
+	    },
+	    endPlay: function() {
+	        this.playing = false;
 	    }
 	};
 	

@@ -56,7 +56,7 @@ Game.prototype = {
         // this.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
     },
     flipPiece: function() {
-        this.currUser().rotatePiece();
+        this.currUser().flipPiece();
     },
     redraw: function() {
         this.render.redraw(this.board.boardArray);

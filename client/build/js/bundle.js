@@ -81,8 +81,10 @@
 	    window.addEventListener('keyup', function(e) {
 	        if (e.keyCode === 82) {
 	            game.rotatePiece();
-	        } else if (ee.keyCode === 70) {
+	            console.log('rotate');
+	        } else if (e.keyCode === 70) {
 	            game.flipPiece();
+	            console.log('flip');
 	        }
 	    });
 	
@@ -472,7 +474,7 @@
 	        // this.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
 	    },
 	    flipPiece: function() {
-	        this.currUser().rotatePiece();
+	        this.currUser().flipPiece();
 	    },
 	    redraw: function() {
 	        this.render.redraw(this.board.boardArray);

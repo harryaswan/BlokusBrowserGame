@@ -35,8 +35,10 @@ window.onload = function(e) {
     window.addEventListener('keyup', function(e) {
         if (e.keyCode === 82) {
             game.rotatePiece();
-        } else if (ee.keyCode === 70) {
+            console.log('rotate');
+        } else if (e.keyCode === 70) {
             game.flipPiece();
+            console.log('flip');
         }
     });
 

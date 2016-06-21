@@ -28,7 +28,6 @@ Game.prototype = {
                 this.render.redraw(this.board.boardArray);
                 this.nextPlayer();
             } else {
-                console.log('invalid move');
                 new Audio('single_oil_can.mp3').play();
             }
         }
@@ -39,12 +38,10 @@ Game.prototype = {
             if (this.currentUser >= this.users.length) {
                 this.currentUser = 0;
             }
-            console.log('curP',this.currentUser);
             if (!this.checkPlayerPlaying(this.currentUser)) {
                 this.nextPlayer();
             }
         } else {
-            console.log("EveryOne Done");
             this.playing = false;
             this.render.redraw(this.board.boardArray);
             alert('Game over');
@@ -57,10 +54,8 @@ Game.prototype = {
     checkPlayersPlaying: function() {
         var count = 0;
         for (var i = 0; i < this.users.length; i++) {
-            console.log('i:',i,'cpp:',this.checkPlayerPlaying(i));
             if (!this.checkPlayerPlaying(i)) {
                 count++;
-                console.log('count', count);
             }
         }
         if (count < this.users.length) {

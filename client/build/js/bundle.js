@@ -445,15 +445,15 @@
 	    },
 	    placePiece: function(e) {
 	        var cPos = this.render.getMousePos(e);
-	        var sound = new Audio('./metal_off_switch.mp3');
 	        var curUser = this.users[this.currentUser];
 	        if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
-	            sound.play();
+	            new Audio('metal_off_switch.mp3').play();
 	            curUser.removeSelectedPiece();
 	            this.render.redraw(this.board.boardArray);
 	            this.nextPlayer();
 	        } else {
 	            console.log('invalid move');
+	            new Audio('single_oil_can.mp3').play();
 	        }
 	    },
 	    nextPlayer: function() {

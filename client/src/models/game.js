@@ -27,7 +27,7 @@ Game.prototype = {
             this.nextPlayer();
         } else {
             console.log('invalid move');
-            new Audio('metal_off_switch.mp3').play();
+            new Audio('single_oil_can.mp3').play();
         }
     },
     nextPlayer: function() {

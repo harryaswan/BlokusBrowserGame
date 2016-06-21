@@ -1,0 +1,62 @@
+var Log = function() {
+      this.data = [];
+      this.currentIndex = 0;
+      this.gameID = null;
+};
+
+Log.prototype = {
+
+    setGameID: function(id) {
+        this.gameID = id;
+    },
+    addData: function(action, options) {
+        this.data.push({action: action, options: options});//action = skip or place; options = rel + position
+        console.log(this.data);
+    },
+    grabData: function() {
+        var data = this.data[this.currentIndex];
+        this.nextIndex();
+        return data;
+    },
+    nextIndex: function() {
+        this.currentIndex++;
+        if (this.currentIndex === this.data.length) {
+          this.currentIndex = null;
+        }
+    },
+    saveData: function() {
+        var request = new XMLHttpRequest();
+        request.onload = function() {
+            if (request.status === 200) {
+                console.log('saved the data');
+            }
+        }
+        request.open('POST', 'log');
+        request.setRequestHeader('Content-Type', 'application/json');
+        var data = {game: this.gameID, data: this.data};
+        console.log(JSON.stringify(data));
+        request.send(JSON.stringify(data));
+    },
+    loadData: function(callback, context) {
+        var request = new XMLHttpRequest();
+        request.onload = function() {
+            if (request.status === 200) {
+                console.log('got the data');
+                console.log(request.responseText);
+                callback(JSON.parse(request.responseText));    
+                
+            }
+        }
+        request.open('GET', 'log');
+        request.send(JSON.stringify({game: this.gameID}));
+    },
+    setData: function(data) {
+        this.data = data;
+    }
+
+};
+
+
+
+
+module.exports = Log;

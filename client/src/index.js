@@ -22,6 +22,10 @@ window.onload = function(e) {
         } else if (e.keyCode === 70) {
             game.flipPiece();
             console.log('flip');
+        } else if (e.keyCode === 83) {
+            game.saveLog();
+        } else if (e.keyCode ===76) {
+            game.loadLog();
         }
     });
 

@@ -68,6 +68,10 @@
 	        } else if (e.keyCode === 70) {
 	            game.flipPiece();
 	            console.log('flip');
+	        } else if (e.keyCode === 83) {
+	            game.saveLog();
+	        } else if (e.keyCode ===76) {
+	            game.loadLog();
 	        }
 	    });
 	
@@ -432,32 +436,53 @@
 	var GameBoard = __webpack_require__(4);
 	var RenderEngine = __webpack_require__(2);
 	var PresetPieces = __webpack_require__(5);
+	var Log = __webpack_require__(7);
+	var GamePiece = __webpack_require__(1);
 	
 	var Game = function(users, canvasElement, canvasWidth) {
 	    this.users = users;
 	    this.currentUser = 0;
 	    this.board = new GameBoard();
 	    this.render = new RenderEngine(canvasElement, canvasWidth);
+	    this.log = new Log();
 	    this.assignPieces();
 	    this.playing = true;
+	    this.logPlaying = false;
+	    this.uID = parseInt(Math.random() * 10000);
+	    this.logStartGame();
 	};
 	
 	Game.prototype = {
 	
+	    logStartGame: function() {
+	        this.log.setGameID(this.uID);
+	        for (var i = 0; i < this.users.length; i++) {
+	            this.log.addData('username', this.users[i].name);
+	        }
+	    },
 	    assignPieces: function() {
 	        for (var user of this.users) {
 	            user.pieces = new PresetPieces().generatePieces();
 	        }
 	    },
-	    placePiece: function(e) {
+	    placePiece: function(e, pieceRel) {
 	        if (this.playing) {
 	            var cPos = this.render.getMousePos(e);
 	            var curUser = this.users[this.currentUser];
-	            if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
+	            var curPiece = null;
+	            if (pieceRel) {
+	                curPiece = new GamePiece(pieceRel);
+	            } else {
+	                curPiece = curUser.getSelectedPiece();
+	            }
+	            if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
 	                new Audio('metal_off_switch.mp3').play();
 	                curUser.removeSelectedPiece();
 	                this.render.redraw(this.board.boardArray);
 	                this.nextPlayer();
+	                if (!this.logPlaying) {
+	                    this.log.addData('place', {pos:{clientX: e.clientX, clientY: e.clientY}, rel:curPiece.relative});
+	                }
 	            } else {
 	                new Audio('single_oil_can.mp3').play();
 	            }
@@ -520,7 +545,19 @@
 	        if (this.playing) {
 	            this.currUser().endPlay();
 	            this.nextPlayer();
+	            if (!this.logPlaying) {
+	                this.log.addData('skip', null);
+	            }
 	        }
+	    },
+	    saveLog: function() {
+	        this.log.saveData();
+	    },
+	    loadLog: function() {
+	        this.log.loadData(this.playFromLog);
+	    },
+	    playFromLog: function(logData) {
+	        console.log('logdata',logData);
 	    }
 	};
 	
@@ -900,6 +937,73 @@
 	
 	module.exports = User;
 
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	var Log = function() {
+	      this.data = [];
+	      this.currentIndex = 0;
+	      this.gameID = null;
+	};
+	
+	Log.prototype = {
+	
+	    setGameID: function(id) {
+	        this.gameID = id;
+	    },
+	    addData: function(action, options) {
+	        this.data.push({action: action, options: options});//action = skip or place; options = rel + position
+	        console.log(this.data);
+	    },
+	    grabData: function() {
+	        var data = this.data[this.currentIndex];
+	        this.nextIndex();
+	        return data;
+	    },
+	    nextIndex: function() {
+	        this.currentIndex++;
+	        if (this.currentIndex === this.data.length) {
+	          this.currentIndex = null;
+	        }
+	    },
+	    saveData: function() {
+	        var request = new XMLHttpRequest();
+	        request.onload = function() {
+	            if (request.status === 200) {
+	                console.log('saved the data');
+	            }
+	        }
+	        request.open('POST', 'log');
+	        request.setRequestHeader('Content-Type', 'application/json');
+	        var data = {game: this.gameID, data: this.data};
+	        console.log(JSON.stringify(data));
+	        request.send(JSON.stringify(data));
+	    },
+	    loadData: function(callback, context) {
+	        var request = new XMLHttpRequest();
+	        request.onload = function() {
+	            if (request.status === 200) {
+	                console.log('got the data');
+	                console.log(request.responseText);
+	                callback(JSON.parse(request.responseText));    
+	                
+	            }
+	        }
+	        request.open('GET', 'log');
+	        request.send(JSON.stringify({game: this.gameID}));
+	    },
+	    setData: function(data) {
+	        this.data = data;
+	    }
+	
+	};
+	
+	
+	
+	
+	module.exports = Log;
 
 /***/ }
 /******/ ]);

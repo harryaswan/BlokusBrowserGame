@@ -3,7 +3,7 @@ var app = express();
 var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
-var url = "mongodb://localhost:27017";
+var url = "mongodb://localhost:27017/blokus";
 
 app.use(bodyParser.json());
 
@@ -11,16 +11,29 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
-app.post('/', function(req, res) {
-    var user = req.body.user;
-    console.log('user', user);
-    // MongoClient.connect(url, function(err, db) {
-    //     var collection = db.collection('bucket_list');
-    //     collection.find({user: user}).toArray(function(err, docs) {
-    //         res.json(docs);
-    //         db.close();
-    //     });
-    // });
+app.post('/log', function(req, res) {
+    var data = req.body.data;
+    var gameID = req.body.game;
+    console.log(data);
+    console.log(gameID);
+    MongoClient.connect(url, function(err, db) {
+        var collection = db.collection('game_logs');
+        collection.update({game: gameID}, {data: data}, {upsert: true});
+        db.close();
+        res.status(200).end();
+    });
+});
+
+app.get('/log', function(req, res) {
+    var gameID = req.body.game;
+    MongoClient.connect(url, function(err, db) {
+        var collection = db.collection('game_logs');
+        collection.find({game: gameID}).toArray(function(err, docs) {
+            console.log('docs', docs)
+            res.json(docs);
+            db.close();
+        });
+    });
 });
 
 app.use(express.static('client/build'));

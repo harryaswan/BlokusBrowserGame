@@ -17,16 +17,6 @@ Game.prototype = {
             user.pieces = new PresetPieces().generatePieces();
         }
     },
-    // placePiece: function(e, game) {
-    //     var cPos = game.render.getMousePos(e);
-    //     var curUser = game.users[game.currentUser];
-    //     if (game.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.getColourCode())) {
-    //         curUser.removeSelectedPiece();
-    //         game.render.redraw(game.board.boardArray);
-    //         game.nextPlayer();
-    //     }
-    // },
-    // placePiece: function(coordinates, piece, colour, game) {
     placePiece: function(e) {
         var cPos = this.render.getMousePos(e);
         var curUser = this.users[this.currentUser];
@@ -53,7 +43,6 @@ Game.prototype = {
     },
     rotatePiece: function() {
         this.currUser().rotatePiece();
-        // this.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
     },
     flipPiece: function() {
         this.currUser().flipPiece();
@@ -61,7 +50,6 @@ Game.prototype = {
     redraw: function() {
         this.render.redraw(this.board.boardArray);
     }
-
 };
 
 module.exports = Game;

@@ -50,34 +50,17 @@
 	window.onload = function(e) {
 	
 	    var canvas = document.getElementById('gameboard');
-	    var users = [];
-	    users.push(new User("Jimmy", "Red"));
-	    users.push(new User("John", "Blue"));
-	    users.push(new User("Frank", "Green"));
-	    users.push(new User("Colin", "Yellow"));
-	    var game = new Game(users, canvas, 600);
+	    var users = [new User("Jimmy", "Red"), new User("John", "Blue")];//, new User("Frank", "Green"), new User("Colin", "Yellow")];
 	
+	    var game = new Game(users, canvas, 600);
 	    game.redraw();
 	
 	    canvas.addEventListener('click', function(e) {
 	        game.placePiece(e);
-	        // var cPos = game.render.getMousePos(e);
-	        // var curUser = game.users[game.currentUser];
-	        // console.log('test',curUser.getSelectedPiece());
-	        // if (game.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode(), game)) {
-	        //     console.log('placed');
-	        //     curUser.removeSelectedPiece();
-	        //     game.render.redraw(game.board.boardArray);
-	        //     game.nextPlayer();
-	        // } else {
-	        //     console.log('not placed');
-	        // }
 	    });
-	
 	    canvas.addEventListener('mousemove', function(e) {
 	        game.onHover(e);
 	    });
-	
 	    window.addEventListener('keyup', function(e) {
 	        if (e.keyCode === 82) {
 	            game.rotatePiece();
@@ -87,7 +70,6 @@
 	            console.log('flip');
 	        }
 	    });
-	
 	};
 
 
@@ -435,16 +417,6 @@
 	            user.pieces = new PresetPieces().generatePieces();
 	        }
 	    },
-	    // placePiece: function(e, game) {
-	    //     var cPos = game.render.getMousePos(e);
-	    //     var curUser = game.users[game.currentUser];
-	    //     if (game.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.getColourCode())) {
-	    //         curUser.removeSelectedPiece();
-	    //         game.render.redraw(game.board.boardArray);
-	    //         game.nextPlayer();
-	    //     }
-	    // },
-	    // placePiece: function(coordinates, piece, colour, game) {
 	    placePiece: function(e) {
 	        var cPos = this.render.getMousePos(e);
 	        var curUser = this.users[this.currentUser];
@@ -471,7 +443,6 @@
 	    },
 	    rotatePiece: function() {
 	        this.currUser().rotatePiece();
-	        // this.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
 	    },
 	    flipPiece: function() {
 	        this.currUser().flipPiece();
@@ -479,7 +450,6 @@
 	    redraw: function() {
 	        this.render.redraw(this.board.boardArray);
 	    }
-	
 	};
 	
 	module.exports = Game;

@@ -1,19 +1,25 @@
-var GameBoard = function() {
+var GameBoard = require('./gameboard.js');
+var RenderEngine = require('./renderengine.js');
+var PresetPieces = require('./pieceRels.js');
+var Preview = require('./preview_pane.js');
+
+
+var Preview = function() {
     // this.board = new Array(20);
     // for (var i = 0; i < 20; i++) {
     //   this.board[i] = new Array(20);
     // }
-    this.boardArray = this.generateBoardArray();
+    this.previewArray = this.generatePreviewArray();
     this.R = 0;
     this.G = 0;
     this.B = 0;
     this.Y = 0;
 };
 
-GameBoard.prototype = {
-    generateBoardArray: function(){
-        var array = new Array(20);
-        for (var i = 0; i < 20; i++) {
+Preview.prototype = {
+    generatePreviewArray: function(){
+        var array = new Array(12);
+        for (var i = 0; i < 12; i++) {
             array[i] = new Array(20);
             for (var j = 0; j < 20; j++) {
                 array[i][j] = null;
@@ -148,4 +154,4 @@ GameBoard.prototype = {
 
 
 
-module.exports = GameBoard;
+module.exports = Preview;

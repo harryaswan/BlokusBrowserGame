@@ -5,25 +5,46 @@
         <title>Blokus - By BlokHeedz</title>
         <link rel="stylesheet" href="css/main.css" media="screen" title="no title" charset="utf-8">
         <link href="https://fonts.googleapis.com/css?family=Proza+Libre" rel="stylesheet">
+
         <script src="js/bundle.js"></script>
     </head>
     <body>
-        <header>
-            Blokus
+        <header id="header">
+        <img src="https://s31.postimg.org/tuxh9rpd7/oie_transparent_1.png">
         </header>
+
         <section id="select_content">
-            <canvas id="selectpanel" height="800" width="300"></canvas>
+            <canvas id="selectpanel" height="100" width="300"></canvas>
         </section>
         <section id="main_content">
-            <canvas id='gameboard' height="600" width="600"></canvas>
+            <div id="main">
+            <canvas id='preview_main' height="120" width="200"></canvas>
+            <canvas id='gameboard' height="120" width="200"></canvas>
+                <canvas id='game_stats' height="100" width="100"></canvas>
+                <canvas id='game_clock' height="100" width="100"></canvas>
+                <canvas id='game_scores' height="100" width="100"></canvas>
+            </div>
+
         </section>
+
+        <section id="preview_panels">
+        <div class="main-container">
+        <div class="fixer-container">
+            <canvas id='preview1' height="120" width="250"></canvas>
+            <canvas id='preview2' height="120" width="250"></canvas>
+            <canvas id='preview3' height="120" width="250"></canvas>
+        </div>
+        </div>
+        </section>
+
         <section id="score_content">
             <canvas id='scorepanel' height="500" width="300"></canvas>
             <input type="button" id="skip_button" value="Skip Turn" />
         </section>
-        <section id="preview_content">
-            <canvas id='previewpanel' height="300" width="800"></canvas>
-        </section>
-        <footer>Made by and &copy; to BlokHeedz - CodeClan 2016</footer>
+
+
+        <footer id="footer">Made by and &copy; to BlokHeedz- CodeClan 2016</footer>
     </body>
 </html>
+
+

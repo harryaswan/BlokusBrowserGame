@@ -1,9 +1,13 @@
-var RenderEngine = function(element, heightWidth) {
+var RenderEngine = function(element, height, width) {
     this.canvas = element;
-    this.canvas.height = heightWidth;
-    this.canvas.width = heightWidth;
+    this.canvas.height = height;
+    this.canvas.width = width;
     this.context = this.canvas.getContext('2d');
-    this.scale = heightWidth / 20;
+    this.scale = height / 20;
+    this.preview_scale = height / 10;
+
+    this.preview_scale_height = height / 10;
+    this.preview_scale_width = width / 10;
 };
 
 RenderEngine.prototype = {
@@ -11,6 +15,12 @@ RenderEngine.prototype = {
         this.context.fillStyle = colour;
         this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
     },
+
+    fillPreviewBox: function(x, y, colour) {
+        this.context.fillStyle = colour;
+        this.context.fillRect(x*this.preview_scale_width, y*this.preview_scale_height, this.preview_scale_width, this.preview_scale_height);
+    },
+
     fillBoard: function(board) {
         for (var y = 0; y < board.length; y++) {
             for (var x = 0; x < board[y].length; x++) {
@@ -18,12 +28,22 @@ RenderEngine.prototype = {
             }
         }
     },
+
+    fillPreviewBoard: function(preview) {
+        for (var y = 0; y < preview.length; y++) {
+            for (var x = 0; x < preview[y].length; x++) {
+                this.fillPreviewBox(x,y,this.getUserColour(preview[y][x]));
+            }
+        }
+    },
+
     getMousePos: function(e) {
         var rect = this.canvas.getBoundingClientRect();
         x = e.clientX - rect.left;
         y = e.clientY - rect.top;
         return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
     },
+
     redraw: function(board, mouseEvent, userColour, piece) {
         var curPos = null;
         if (mouseEvent) {
@@ -36,6 +56,20 @@ RenderEngine.prototype = {
         }
         this.drawGrid();
     },
+
+    redrawPreview: function(preview, mouseEvent, userColour, piece) {
+        var curPos = null;
+        if (mouseEvent) {
+            curPos = this.getMousePos(mouseEvent);
+        }
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.fillPreviewBoard(preview);
+        if (curPos &&  userColour &&piece) {
+            this.highlightBox(curPos, userColour, piece);
+        }
+        this.drawPreviewGrid();
+    },
+
     highlightBox: function(pos, userColour, piece) {
         this.context.beginPath();
         this.context.strokeStyle = this.getUserColour(userColour);
@@ -55,6 +89,7 @@ RenderEngine.prototype = {
         this.context.stroke();
         this.context.lineWidth = 1;
     },
+
     drawBoxPart: function(x, y, box) {
         x *= this.scale;
         y *= this.scale;
@@ -90,6 +125,21 @@ RenderEngine.prototype = {
         }
         this.context.stroke();
     },
+
+    drawPreviewGrid: function() {
+        this.context.beginPath();
+        var i = 0;
+        while ( i <= this.canvas.width ) {
+            this.context.strokeStyle = "black";
+            this.context.moveTo(i,0);
+            this.context.lineTo(i, this.canvas.height);
+            this.context.moveTo(0,i);
+            this.context.lineTo(this.canvas.width, i);
+            i = i + this.preview_scale;
+        }
+        this.context.stroke();
+    },
+
     getUserColour: function(colour) {
         switch (colour) {
             case 'R':
@@ -105,6 +155,7 @@ RenderEngine.prototype = {
         }
     }
 };
+
 
 module.exports = RenderEngine;
 

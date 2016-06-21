@@ -2,7 +2,7 @@ var User = function(name, colour) {
     this.name = name;
     this.colour = colour;
     this.pieces = [];
-    this.selectedPieceIndex = null;
+    this.selectedPieceIndex = 0;
 };
 
 User.prototype = {
@@ -17,6 +17,12 @@ User.prototype = {
     },
     getSelectedPiece: function() {
         return this.pieces[this.selectedPieceIndex];
+    },
+    rotatePiece: function() {
+        this.pieces[this.selectedPieceIndex].rotate();
+    },
+    flipPiece: function() {
+        this.pieces[this.selectedPieceIndex].flip();
     },
     removeSelectedPiece: function() {
         this.pieces.splice(this.selectedPieceIndex, 1);

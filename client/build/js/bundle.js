@@ -57,14 +57,34 @@
 	    users.push(new User("Colin", "Yellow"));
 	    var game = new Game(users, canvas, 600);
 	
+	    game.redraw();
+	
 	    canvas.addEventListener('click', function(e) {
-	        game.placePiece(e, game);
+	        game.placePiece(e);
+	        // var cPos = game.render.getMousePos(e);
+	        // var curUser = game.users[game.currentUser];
+	        // console.log('test',curUser.getSelectedPiece());
+	        // if (game.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode(), game)) {
+	        //     console.log('placed');
+	        //     curUser.removeSelectedPiece();
+	        //     game.render.redraw(game.board.boardArray);
+	        //     game.nextPlayer();
+	        // } else {
+	        //     console.log('not placed');
+	        // }
 	    });
 	
 	    canvas.addEventListener('mousemove', function(e) {
-	        game.onHover(e, game);
+	        game.onHover(e);
 	    });
 	
+	    window.addEventListener('keyup', function(e) {
+	        if (e.keyCode === 82) {
+	            game.rotatePiece();
+	        } else if (ee.keyCode === 70) {
+	            game.flipPiece();
+	        }
+	    });
 	
 	};
 
@@ -361,6 +381,8 @@
 	                return 'blue';
 	            case 'Y':
 	                return 'yellow';
+	            default:
+	                return 'white';
 	        }
 	    }
 	};
@@ -401,6 +423,7 @@
 	    this.currentUser = 0;
 	    this.board = new GameBoard();
 	    this.render = new RenderEngine(canvasElement, canvasWidth);
+	    this.assignPieces();
 	};
 	
 	Game.prototype = {
@@ -410,13 +433,25 @@
 	            user.pieces = new PresetPieces().generatePieces();
 	        }
 	    },
-	    placePiece: function(e, game) {
-	        var cPos = game.render.getMousePos(e);
-	        var curUser = game.users[game.currentUser];
-	        if (game.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.getColourCode())) {
+	    // placePiece: function(e, game) {
+	    //     var cPos = game.render.getMousePos(e);
+	    //     var curUser = game.users[game.currentUser];
+	    //     if (game.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.getColourCode())) {
+	    //         curUser.removeSelectedPiece();
+	    //         game.render.redraw(game.board.boardArray);
+	    //         game.nextPlayer();
+	    //     }
+	    // },
+	    // placePiece: function(coordinates, piece, colour, game) {
+	    placePiece: function(e) {
+	        var cPos = this.render.getMousePos(e);
+	        var curUser = this.users[this.currentUser];
+	        if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
 	            curUser.removeSelectedPiece();
-	            game.render.redraw(game.board.boardArray);
-	            game.nextPlayer();
+	            this.render.redraw(this.board.boardArray);
+	            this.nextPlayer();
+	        } else {
+	            console.log('invalid move');
 	        }
 	    },
 	    nextPlayer: function() {
@@ -428,9 +463,19 @@
 	    currUser: function() {
 	        return this.users[this.currentUser];
 	    },
-	    onHover: function(e, game) {
-	        var curUser = game.currUser();
-	        this.render.redraw(game.board.boardArray, e, curUser.getColourCode(), curUser.getSelectedPiece().relative);
+	    onHover: function(e) {
+	        var curUser = this.currUser();
+	        this.render.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+	    },
+	    rotatePiece: function() {
+	        this.currUser().rotatePiece();
+	        // this.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+	    },
+	    flipPiece: function() {
+	        this.currUser().rotatePiece();
+	    },
+	    redraw: function() {
+	        this.render.redraw(this.board.boardArray);
 	    }
 	
 	};
@@ -774,7 +819,7 @@
 	    this.name = name;
 	    this.colour = colour;
 	    this.pieces = [];
-	    this.selectedPieceIndex = null;
+	    this.selectedPieceIndex = 0;
 	};
 	
 	User.prototype = {
@@ -789,6 +834,12 @@
 	    },
 	    getSelectedPiece: function() {
 	        return this.pieces[this.selectedPieceIndex];
+	    },
+	    rotatePiece: function() {
+	        this.pieces[this.selectedPieceIndex].rotate();
+	    },
+	    flipPiece: function() {
+	        this.pieces[this.selectedPieceIndex].flip();
 	    },
 	    removeSelectedPiece: function() {
 	        this.pieces.splice(this.selectedPieceIndex, 1);

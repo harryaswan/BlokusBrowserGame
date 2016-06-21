@@ -100,6 +100,8 @@ RenderEngine.prototype = {
                 return 'blue';
             case 'Y':
                 return 'yellow';
+            default:
+                return 'white';
         }
     }
 };

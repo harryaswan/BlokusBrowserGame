@@ -11,13 +11,33 @@ window.onload = function(e) {
     users.push(new User("Colin", "Yellow"));
     var game = new Game(users, canvas, 600);
 
+    game.redraw();
+
     canvas.addEventListener('click', function(e) {
-        game.placePiece(e, game);
+        game.placePiece(e);
+        // var cPos = game.render.getMousePos(e);
+        // var curUser = game.users[game.currentUser];
+        // console.log('test',curUser.getSelectedPiece());
+        // if (game.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode(), game)) {
+        //     console.log('placed');
+        //     curUser.removeSelectedPiece();
+        //     game.render.redraw(game.board.boardArray);
+        //     game.nextPlayer();
+        // } else {
+        //     console.log('not placed');
+        // }
     });
 
     canvas.addEventListener('mousemove', function(e) {
-        game.onHover(e, game);
+        game.onHover(e);
     });
 
+    window.addEventListener('keyup', function(e) {
+        if (e.keyCode === 82) {
+            game.rotatePiece();
+        } else if (ee.keyCode === 70) {
+            game.flipPiece();
+        }
+    });
 
 };

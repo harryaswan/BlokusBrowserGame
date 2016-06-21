@@ -534,10 +534,48 @@
 	        } else {
 	            this.playing = false;
 	            this.render.redraw(this.board.boardArray);
-	            alert('Game over');
+	            var winners = this.findWinner();
+	            winnerString = '';
+	            for (var winner of winners) {
+	                winnerString += winner.name + ' ';
+	            } 
+	        alert(winnerString + ", you are the winner!");
 	        }
-	
 	    },
+	    findWinner: function() {
+	        var userObjects = [];
+	        for (var i = 0; i < this.users.length; i++) {
+	            userObjects.push({
+	                name: this.users[i].name,
+	                score: this.board[this.users[i].colourCode()]
+	            })
+	        }
+	        userObjects.sort(function(a,b) {
+	            if (a.score > b.score) {
+	                return 1;
+	            }
+	            if (a.score < b.score) {
+	                return -1;
+	            }
+	            return 0;
+	        });
+	        var firstWinner = userObjects[3];
+	        var winners = [];
+	        userObjects.splice(3,1);
+	        for (var user of userObjects) {
+	            if (user.score === firstWinner.score) {
+	                winners.push(user);
+	            }
+	        }
+	        winners.push(firstWinner);
+	        return winners;
+	    },
+	
+	
+	
+	
+	
+	
 	    checkPlayerPlaying: function(index) {
 	        return this.users[index].playing;
 	    },

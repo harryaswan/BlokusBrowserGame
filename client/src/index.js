@@ -4,7 +4,7 @@ var User = require('./models/user.js');
 window.onload = function(e) {
 
     var canvas = document.getElementById('gameboard');
-    var users = [new User("Jimmy", "Red"), new User("John", "Blue")];//, new User("Frank", "Green"), new User("Colin", "Yellow")];
+    var users = [new User("Jimmy", "Red"), new User("John", "Blue"), new User("Frank", "Green"), new User("Colin", "Yellow")];
 
     var game = new Game(users, canvas, 600);
     game.redraw();

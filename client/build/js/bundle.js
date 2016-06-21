@@ -50,7 +50,7 @@
 	window.onload = function(e) {
 	
 	    var canvas = document.getElementById('gameboard');
-	    var users = [new User("Jimmy", "Red"), new User("John", "Blue")];//, new User("Frank", "Green"), new User("Colin", "Yellow")];
+	    var users = [new User("Jimmy", "Red"), new User("John", "Blue"), new User("Frank", "Green"), new User("Colin", "Yellow")];
 	
 	    var game = new Game(users, canvas, 600);
 	    game.redraw();
@@ -273,8 +273,34 @@
 	
 	RenderEngine.prototype = {
 	    fillBox: function(x, y, colour) {
-	        this.context.fillStyle = colour;
+	        this.context.fillStyle = colour.light;
 	        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
+	
+	        this.context.fillStyle = colour.dark;
+	        // switch(colour) {
+	        //     case 'red':
+	        //         this.context.fillStyle = 'darkred';
+	        //         break;
+	        //     case 'green':
+	        //         this.context.fillStyle = 'darkgreen';
+	        //         break;
+	        //     case 'yellow':
+	        //         this.context.fillStyle = 'black';
+	        //         break;
+	        //     case 'blue':
+	        //         this.context.fillStyle = 'black';
+	        //         break;
+	        // }
+	
+	
+	
+	
+	        this.context.fillRect((x*this.scale)+3, (y*this.scale)+3, this.scale-6, this.scale-6);
+	        this.context.fillStyle = colour.light;
+	        this.context.fillRect((x*this.scale)+5, (y*this.scale)+5, this.scale-10, this.scale-10);
+	        // this.context.moveTo(x*this.scale + 2, y*this.scale + 2);
+	        // this.context.lineTo(x*this.scale + (this.scale-2), y*this.scale + (this.scale - 2));
+	        this.context.lineWidth = 1;
 	    },
 	    fillBoard: function(board) {
 	        for (var y = 0; y < board.length; y++) {
@@ -303,7 +329,7 @@
 	    },
 	    highlightBox: function(pos, userColour, piece) {
 	        this.context.beginPath();
-	        this.context.strokeStyle = this.getUserColour(userColour);
+	        this.context.strokeStyle = this.getUserColour(userColour).light;
 	        this.context.lineWidth = this.scale / 5;
 	        var x = pos.x - 2;
 	        var y = pos.y - 2;
@@ -346,7 +372,7 @@
 	        this.context.beginPath();
 	        var i = 0;
 	        while ( i <= this.canvas.width ) {
-	            this.context.strokeStyle = "black";
+	            this.context.strokeStyle = "#837E7C";
 	            this.context.moveTo(i,0);
 	            this.context.lineTo(i, this.canvas.height);
 	            this.context.moveTo(0,i);
@@ -358,15 +384,15 @@
 	    getUserColour: function(colour) {
 	        switch (colour) {
 	            case 'R':
-	                return 'red';
+	                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
 	            case 'G':
-	                return 'green';
+	                return {light: '#4CC417', dark: '#437C17'};//green
 	            case 'B':
-	                return 'blue';
+	                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
 	            case 'Y':
-	                return 'yellow';
+	                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
 	            default:
-	                return 'white';
+	                return {light: '#FFFFFF', dark: '#E5E4E2'};
 	        }
 	    }
 	};
@@ -419,8 +445,10 @@
 	    },
 	    placePiece: function(e) {
 	        var cPos = this.render.getMousePos(e);
+	        var sound = new Audio('./metal_off_switch.mp3');
 	        var curUser = this.users[this.currentUser];
 	        if (this.board.placePiece([cPos.y, cPos.x], curUser.getSelectedPiece(), curUser.colourCode())) {
+	            sound.play();
 	            curUser.removeSelectedPiece();
 	            this.render.redraw(this.board.boardArray);
 	            this.nextPlayer();

@@ -542,11 +542,11 @@
 	                if (!this.logPlaying) {
 	                    this.log.addData('place', {pos:cPos, rel:curPiece.relative});
 	                }
-	                this.displayScoreBoard();
 	            } else {
 	                new Audio('single_oil_can.mp3').play();
 	            }
 	        }
+	        this.displayScoreBoard();
 	    },
 	    nextPlayer: function() {
 	        if (this.checkPlayersPlaying()) {
@@ -573,7 +573,8 @@
 	            } else {
 	                winnerString = 'The game is tied; you are all winners! (or losers depending on how you look at it)';
 	            }
-	        alert(winnerString);
+	            alert(winnerString);
+	            window.location = "";
 	        }
 	    },
 	    findWinner: function() {
@@ -646,6 +647,7 @@
 	        if (currUser) {
 	            this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
 	        }
+	        this.displayScoreBoard();
 	    },
 	    skipTurn: function() {
 	        if (this.playing) {

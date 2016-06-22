@@ -39,14 +39,54 @@ var createLoginScreen = function() {
             createGameBoard(users);
         });
     });
+    document.getElementById('load_button').addEventListener('click', function(e) {
+        var logNumber = document.getElementById('gameid_input').value; 
+        loadPage('gameboard.html', document.getElementById('load_in_content'), function() {
+            createGameBoard(null, parseInt(logNumber)); 
+        });
+        console.log('load');
+        
+    });
 };
 
-var createGameBoard = function(users) {
+var displayScoreBoard = function(game) {
+
+    var users = game.users;
+    var currUser = game.currentUser;
+    var blue = document.getElementById("blue_player");
+    var yellow = document.getElementById("yellow_player");
+    var red = document.getElementById("red_player");
+    var green = document.getElementById("green_player");
+    var blue_score = document.getElementById('blue_score'); 
+    var yellow_score = document.getElementById('yellow_score'); 
+    var red_score = document.getElementById('red_score'); 
+    var green_score = document.getElementById('green_score'); 
+    
+
+    blue.innerText = users[0].name;
+    yellow.innerText = users[1].name;
+    red.innerText = users[2].name;
+    green.innerText = users[3].name;
+
+    blue_score.innerText = game.board[game.users[0].colourCode()];
+    yellow_score.innerText = game.board[game.users[1].colourCode()];
+    red_score.innerText = game.board[game.users[2].colourCode()];
+    green_score.innerText = game.board[game.users[3].colourCode()];
+}
+
+var createGameBoard = function(users, logNumber) {
     var canvas = document.getElementById('gameboard');
     var selectCanvas = document.getElementById('selectpanel');
     // var users = ["Frank", "Jimmy", "Colin", "Dave"];
+    var game = null;
+    if (logNumber){
+        game = new Game([], canvas, 600, selectCanvas);
+        game.loadLog(parseInt(logNumber));   
+    } else {
+        game = new Game(users, canvas, 600, selectCanvas);
+    }
 
-    var game = new Game(users, canvas, 600, selectCanvas);
+    displayScoreBoard(game);
     game.redraw();
 
     selectCanvas.addEventListener('click', function(e) {
@@ -55,6 +95,7 @@ var createGameBoard = function(users) {
 
     canvas.addEventListener('click', function(e) {
         game.placePiece(e);
+        displayScoreBoard(game);
     });
     canvas.addEventListener('mousemove', function(e) {
         game.onHover(e);
@@ -78,8 +119,5 @@ var createGameBoard = function(users) {
         game.skipTurn();
     });
 
-    document.getElementById('load_button').addEventListener('click', function(e) {
-        console.log('load');
-        game.loadLog(parseInt(document.getElementById('gameid_input').value));
-    });
+
 };

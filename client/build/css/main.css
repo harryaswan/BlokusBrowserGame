@@ -40,6 +40,7 @@ body {
 }
 
 #footer{
+  display: inline-block;
   font-family: blokus;
   color: white;
   text-align: center;
@@ -87,6 +88,43 @@ body {
   padding: 20px;
   margin-left: -10px;
   display: inline-block;
+}
+
+#score{
+  display: inline-block;
+padding: 100px;
+text-shadow: 2px 2px white;
+}
+
+.blue{
+  font-family: blokus;
+  font-size: 30px;
+  color: blue;
+}
+
+.yellow{
+  font-family: blokus;
+  font-size: 30px;
+  color: yellow;
+}
+
+.red{
+  font-family: blokus;
+  font-size: 30px;
+  color: red;
+}
+
+.green{
+  font-family: blokus;
+  font-size: 30px;
+  color: green;
+}
+
+#skip_button{
+  border-radius: 12px;
+  background-color: white;
+  font-family: blokus;
+  color: black;
 }
 
 /*

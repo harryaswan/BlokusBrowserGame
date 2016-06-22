@@ -95,7 +95,6 @@
 	var createGameBoard = function(users, logNumber) {
 	    var canvas = document.getElementById('gameboard');
 	    var selectCanvas = document.getElementById('selectpanel');
-	    // var users = ["Frank", "Jimmy", "Colin", "Dave"];
 	    var game = null;
 	    if (logNumber){
 	        game = new Game([], canvas, 600, selectCanvas);
@@ -564,11 +563,17 @@
 	            this.playing = false;
 	            this.render.redraw(this.board.boardArray);
 	            var winners = this.findWinner();
-	            winnerString = '';
-	            for (var winner of winners) {
-	                winnerString += winner.name + ' ';
+	            var winnerString = '';
+	            if (winners.length === 1) {
+	                winnerString = winners[0].name + ' is the winner - congratulations ' + winners[0].name + '!';
+	            } else if (winners.length === 2) {
+	                winnerString = 'The game is tied; ' + winners[0].name + ' and ' + winners[1].name + ' are the winners - congratulations!';
+	            } else if (winners.length === 3) {
+	                winnerString = 'The game is tied; ' + winners[0].name + ', ' + winners[1].name + ' and ' + winners[2].name + ' have won - congratulations!';
+	            } else {
+	                winnerString = 'The game is tied; you are all winners! (or losers depending on how you look at it)';
 	            }
-	        alert(winnerString + ", you are the winner!");
+	        alert(winnerString);
 	        }
 	    },
 	    findWinner: function() {

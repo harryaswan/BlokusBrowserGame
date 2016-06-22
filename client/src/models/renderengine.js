@@ -46,8 +46,10 @@ RenderEngine.prototype = {
     },
     getMousePos: function(e) {
         var rect = this.canvas.getBoundingClientRect();
-        x = e.clientX - rect.left;
-        y = e.clientY - rect.top;
+        var tPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-left'));
+        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
+        x = e.clientX - rect.left - lPadding;
+        y = e.clientY - rect.top - tPadding;
         return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
     },
     redraw: function(board, mouseEvent, userColour, piece) {

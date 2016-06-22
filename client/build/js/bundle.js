@@ -49,8 +49,47 @@
 	
 	window.onload = function(e) {
 	
+	    var content = document.getElementById('main_content');
+	    loadPage('login.html', content, createLoginScreen);
+	
+	};
+	
+	var loadPage = function(url, element, callback) {
+	    var request = new XMLHttpRequest();
+	    request.onload = function() {
+	        if (request.status === 200) {
+	            element.innerHTML = request.responseText;
+	            callback();
+	        }
+	    };
+	    request.open("GET", url);
+	    request.send(null);
+	};
+	
+	var createLoginScreen = function() {
+	    var button = document.getElementById('play_button');
+	    button.addEventListener('click', function(e) {
+	        var blue = document.getElementById('blue_user').value;
+	        var yellow = document.getElementById('yellow_user').value;
+	        var red = document.getElementById('red_user').value;
+	        var green = document.getElementById('green_user').value;
+	        var users = [];
+	        users = [blue, yellow, red, green];
+	        console.log(users);
+	        for (var i = 0; i < users.length; i++) {
+	            if (users[i] === '') {
+	                users[i] = 'Player ' + (i + 1);
+	            }
+	        }
+	        loadPage('gameboard.html', document.getElementById('main_content'), function() {
+	            createGameBoard(users);
+	        });
+	    });
+	};
+	
+	var createGameBoard = function(users) {
 	    var canvas = document.getElementById('gameboard');
-	    var users = ["Frank", "Jimmy", "Colin", "Dave"];
+	    // var users = ["Frank", "Jimmy", "Colin", "Dave"];
 	
 	    var game = new Game(users, canvas, 600);
 	    game.redraw();
@@ -325,8 +364,10 @@
 	    },
 	    getMousePos: function(e) {
 	        var rect = this.canvas.getBoundingClientRect();
-	        x = e.clientX - rect.left;
-	        y = e.clientY - rect.top;
+	        var tPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-left'));
+	        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
+	        x = e.clientX - rect.left - lPadding;
+	        y = e.clientY - rect.top - tPadding;
 	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
 	    },
 	    redraw: function(board, mouseEvent, userColour, piece) {

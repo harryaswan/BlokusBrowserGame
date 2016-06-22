@@ -57,7 +57,6 @@ var createGameBoard = function(users, logNumber) {
     } else {
         game = new Game(users, canvas, 600, selectCanvas);
     }
-
     game.redraw();
 
     selectCanvas.addEventListener('click', function(e) {

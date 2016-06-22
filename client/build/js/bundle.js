@@ -95,6 +95,10 @@
 	    var game = new Game(users, canvas, 600, selectCanvas);
 	    game.redraw();
 	
+	    selectCanvas.addEventListener('click', function(e) {
+	        game.userSelectPiece(e);
+	    });
+	
 	    canvas.addEventListener('click', function(e) {
 	        game.placePiece(e);
 	    });
@@ -504,7 +508,13 @@
 	    },
 	    placePiece: function(e, pieceRel) {
 	        if (this.playing) {
-	            var cPos = this.render.getMousePos(e);
+	
+	            var cPos = null;
+	            if(!this.logPlaying) {
+	                cPos = this.render.getMousePos(e);
+	            } else {
+	                cPos = e;
+	            }
 	            var curUser = this.users[this.currentUser];
 	            var curPiece = null;
 	            if (pieceRel) {
@@ -512,13 +522,15 @@
 	            } else {
 	                curPiece = curUser.getSelectedPiece();
 	            }
+	            console.log('placing', cPos);
+	            console.log('placing', curPiece);
 	            if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
 	                new Audio('metal_off_switch.mp3').play();
 	                curUser.removeSelectedPiece();
 	                this.render.redraw(this.board.boardArray);
 	                this.nextPlayer();
 	                if (!this.logPlaying) {
-	                    this.log.addData('place', {pos:{clientX: e.clientX, clientY: e.clientY}, rel:curPiece.relative});
+	                    this.log.addData('place', {pos:cPos, rel:curPiece.relative});
 	                }
 	            } else {
 	                new Audio('single_oil_can.mp3').play();
@@ -665,6 +677,10 @@
 	                game.createUser(options);
 	                break;
 	        }
+	    },
+	    userSelectPiece: function(e) {
+	        var index = this.selectRenderEngine.getClickBox(this.selectRenderEngine.getMousePos(e));
+	        this.currUser().selectPiece(index);
 	    }
 	};
 	
@@ -1150,7 +1166,7 @@
 	        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
 	        x = e.clientX - rect.left - lPadding;
 	        y = e.clientY - rect.top - tPadding;
-	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
+	        return {x: parseInt(x / this.xScale), y: parseInt(y / this.yScale)};
 	    },
 	    redraw: function(pieces, userColour) {
 	
@@ -1159,7 +1175,9 @@
 	        // }
 	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
-	        console.log('here');
+	        console.log('click');
+	
+	        this.selectBoard = this.generateArray();
 	
 	        this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
 	
@@ -1229,7 +1247,7 @@
 	        }
 	        var y = 0;
 	        while ( y <= this.canvas.height ) {
-	            this.context.strokeStyle = "#837E7C";
+	            this.context.strokeStyle = "#000000";
 	            this.context.moveTo(0,y);
 	            this.context.lineTo(this.canvas.width, y);
 	            y += this.yScale;
@@ -1239,13 +1257,13 @@
 	    getUserColour: function(colour) {
 	        switch (colour) {
 	            case 'R':
-	                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
+	                return {light: '#F62217', dark: '#800517'};
 	            case 'G':
-	                return {light: '#4CC417', dark: '#437C17'};//green
+	                return {light: '#4CC417', dark: '#437C17'};
 	            case 'B':
-	                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
+	                return {light: '#488AC7', dark: '#1F45FC'};
 	            case 'Y':
-	                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
+	                return {light: '#FFFF00', dark: '#C68E17'};
 	            default:
 	                return {light: '#FFFFFF', dark: '#E5E4E2'};
 	        }
@@ -1274,6 +1292,27 @@
 	
 	        array.pop();
 	        return array;
+	    },
+	    getClickBox: function(pos) {
+	        var index = 0;
+	        console.log(pos);
+	
+	        for (var x = 0; x < 11; x++) {
+	            if (pos.x > 0 && pos.x < 6) {
+	                if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
+	                    return index;
+	                }
+	            }
+	            index++;
+	            if (pos.x > 6 && pos.x < 12) {
+	                if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
+	                    return index;
+	                }
+	            }
+	            index++;
+	            console.log('index',index);
+	        }
+	
 	    }
 	};
 	

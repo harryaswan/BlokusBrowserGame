@@ -30,7 +30,7 @@ SelectRenderEngine.prototype = {
         var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
         x = e.clientX - rect.left - lPadding;
         y = e.clientY - rect.top - tPadding;
-        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
+        return {x: parseInt(x / this.xScale), y: parseInt(y / this.yScale)};
     },
     redraw: function(pieces, userColour) {
 
@@ -39,7 +39,9 @@ SelectRenderEngine.prototype = {
         // }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        console.log('here');
+        console.log('click');
+
+        this.selectBoard = this.generateArray();
 
         this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
 
@@ -109,7 +111,7 @@ SelectRenderEngine.prototype = {
         }
         var y = 0;
         while ( y <= this.canvas.height ) {
-            this.context.strokeStyle = "#837E7C";
+            this.context.strokeStyle = "#000000";
             this.context.moveTo(0,y);
             this.context.lineTo(this.canvas.width, y);
             y += this.yScale;
@@ -119,13 +121,13 @@ SelectRenderEngine.prototype = {
     getUserColour: function(colour) {
         switch (colour) {
             case 'R':
-                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
+                return {light: '#F62217', dark: '#800517'};
             case 'G':
-                return {light: '#4CC417', dark: '#437C17'};//green
+                return {light: '#4CC417', dark: '#437C17'};
             case 'B':
-                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
+                return {light: '#488AC7', dark: '#1F45FC'};
             case 'Y':
-                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
+                return {light: '#FFFF00', dark: '#C68E17'};
             default:
                 return {light: '#FFFFFF', dark: '#E5E4E2'};
         }
@@ -154,6 +156,27 @@ SelectRenderEngine.prototype = {
 
         array.pop();
         return array;
+    },
+    getClickBox: function(pos) {
+        var index = 0;
+        console.log(pos);
+
+        for (var x = 0; x < 11; x++) {
+            if (pos.x > 0 && pos.x < 6) {
+                if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
+                    return index;
+                }
+            }
+            index++;
+            if (pos.x > 6 && pos.x < 12) {
+                if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
+                    return index;
+                }
+            }
+            index++;
+            console.log('index',index);
+        }
+
     }
 };
 

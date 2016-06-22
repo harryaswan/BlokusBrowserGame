@@ -63,7 +63,13 @@ Game.prototype = {
     },
     placePiece: function(e, pieceRel) {
         if (this.playing) {
-            var cPos = this.render.getMousePos(e);
+
+            var cPos = null;
+            if(!this.logPlaying) {
+                cPos = this.render.getMousePos(e);
+            } else {
+                cPos = e;
+            }
             var curUser = this.users[this.currentUser];
             var curPiece = null;
             if (pieceRel) {
@@ -71,13 +77,15 @@ Game.prototype = {
             } else {
                 curPiece = curUser.getSelectedPiece();
             }
+            console.log('placing', cPos);
+            console.log('placing', curPiece);
             if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
                 new Audio('metal_off_switch.mp3').play();
                 curUser.removeSelectedPiece();
                 this.render.redraw(this.board.boardArray);
                 this.nextPlayer();
                 if (!this.logPlaying) {
-                    this.log.addData('place', {pos:{clientX: e.clientX, clientY: e.clientY}, rel:curPiece.relative});
+                    this.log.addData('place', {pos:cPos, rel:curPiece.relative});
                 }
             } else {
                 new Audio('single_oil_can.mp3').play();
@@ -224,6 +232,10 @@ Game.prototype = {
                 game.createUser(options);
                 break;
         }
+    },
+    userSelectPiece: function(e) {
+        var index = this.selectRenderEngine.getClickBox(this.selectRenderEngine.getMousePos(e));
+        this.currUser().selectPiece(index);
     }
 };
 

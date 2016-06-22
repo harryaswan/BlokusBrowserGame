@@ -49,6 +49,10 @@ var createGameBoard = function(users) {
     var game = new Game(users, canvas, 600, selectCanvas);
     game.redraw();
 
+    selectCanvas.addEventListener('click', function(e) {
+        game.userSelectPiece(e);
+    });
+
     canvas.addEventListener('click', function(e) {
         game.placePiece(e);
     });

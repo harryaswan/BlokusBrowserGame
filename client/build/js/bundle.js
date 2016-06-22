@@ -49,7 +49,7 @@
 	
 	window.onload = function(e) {
 	
-	    var content = document.getElementById('main_content');
+	    var content = document.getElementById('load_in_content');
 	    loadPage('login.html', content, createLoginScreen);
 	
 	};
@@ -81,7 +81,7 @@
 	                users[i] = 'Player ' + (i + 1);
 	            }
 	        }
-	        loadPage('gameboard.html', document.getElementById('main_content'), function() {
+	        loadPage('gameboard.html', document.getElementById('load_in_content'), function() {
 	            createGameBoard(users);
 	        });
 	    });
@@ -89,9 +89,10 @@
 	
 	var createGameBoard = function(users) {
 	    var canvas = document.getElementById('gameboard');
+	    var selectCanvas = document.getElementById('selectpanel');
 	    // var users = ["Frank", "Jimmy", "Colin", "Dave"];
 	
-	    var game = new Game(users, canvas, 600);
+	    var game = new Game(users, canvas, 600, selectCanvas);
 	    game.redraw();
 	
 	    canvas.addEventListener('click', function(e) {
@@ -328,31 +329,10 @@
 	    fillBox: function(x, y, colour) {
 	        this.context.fillStyle = colour.light;
 	        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
-	
 	        this.context.fillStyle = colour.dark;
-	        // switch(colour) {
-	        //     case 'red':
-	        //         this.context.fillStyle = 'darkred';
-	        //         break;
-	        //     case 'green':
-	        //         this.context.fillStyle = 'darkgreen';
-	        //         break;
-	        //     case 'yellow':
-	        //         this.context.fillStyle = 'black';
-	        //         break;
-	        //     case 'blue':
-	        //         this.context.fillStyle = 'black';
-	        //         break;
-	        // }
-	
-	
-	
-	
 	        this.context.fillRect((x*this.scale)+3, (y*this.scale)+3, this.scale-6, this.scale-6);
 	        this.context.fillStyle = colour.light;
 	        this.context.fillRect((x*this.scale)+5, (y*this.scale)+5, this.scale-10, this.scale-10);
-	        // this.context.moveTo(x*this.scale + 2, y*this.scale + 2);
-	        // this.context.lineTo(x*this.scale + (this.scale-2), y*this.scale + (this.scale - 2));
 	        this.context.lineWidth = 1;
 	    },
 	    fillBoard: function(board) {
@@ -453,26 +433,6 @@
 	};
 	
 	module.exports = RenderEngine;
-	
-	// canvas.addEventListener('mousemove', function(e) {
-	//     var pieceRel = [
-	//         [2],
-	//         [2],
-	//         [2],
-	//         [2,3],
-	//         []
-	//     ];
-	//     var userColour = "green"; // grab colour from current user
-	//
-	//     render.redraw(board, e, userColour, pieceRel);
-	// });
-	//
-	// canvas.addEventListener('click', function(e) {
-	//     var cPos = render.getMousePos(e);
-	//     board[cPos.y][cPos.x] = "blue"; // grab colour from current user
-	//     console.log(board);
-	//     render.redraw(board, e);
-	// });
 
 
 /***/ },
@@ -481,16 +441,18 @@
 
 	var GameBoard = __webpack_require__(4);
 	var RenderEngine = __webpack_require__(2);
+	var SelectRenderEngine = __webpack_require__(9);
 	var PresetPieces = __webpack_require__(5);
 	var GamePiece = __webpack_require__(1);
 	var User = __webpack_require__(6);
 	var Log = __webpack_require__(7);
 	
-	var Game = function(users, canvasElement, canvasWidth) {
+	var Game = function(users, canvasElement, canvasWidth, selectCanvasElement) {
 	    this.users = [];
 	    this.currentUser = 0;
 	    this.board = new GameBoard();
 	    this.render = new RenderEngine(canvasElement, canvasWidth);
+	    this.selectRenderEngine = new SelectRenderEngine(selectCanvasElement, 600, 140);
 	    this.log = new Log();
 	
 	    this.playing = true;
@@ -572,6 +534,8 @@
 	            if (!this.checkPlayerPlaying(this.currentUser)) {
 	                this.nextPlayer();
 	            }
+	            var currUser = this.currUser();
+	            this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
 	        } else {
 	            this.playing = false;
 	            this.render.redraw(this.board.boardArray);
@@ -579,7 +543,7 @@
 	            winnerString = '';
 	            for (var winner of winners) {
 	                winnerString += winner.name + ' ';
-	            } 
+	            }
 	        alert(winnerString + ", you are the winner!");
 	        }
 	    },
@@ -589,7 +553,7 @@
 	            userObjects.push({
 	                name: this.users[i].name,
 	                score: this.board[this.users[i].colourCode()]
-	            })
+	            });
 	        }
 	        userObjects.sort(function(a,b) {
 	            if (a.score > b.score) {
@@ -611,12 +575,6 @@
 	        winners.push(firstWinner);
 	        return winners;
 	    },
-	
-	
-	
-	
-	
-	
 	    checkPlayerPlaying: function(index) {
 	        return this.users[index].playing;
 	    },
@@ -653,6 +611,12 @@
 	    },
 	    redraw: function() {
 	        this.render.redraw(this.board.boardArray);
+	
+	        var currUser = this.currUser();
+	
+	        console.log('redraw');
+	
+	        this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
 	    },
 	    skipTurn: function() {
 	        if (this.playing) {
@@ -1147,6 +1111,173 @@
 	
 	
 	module.exports = Log;
+
+
+/***/ },
+/* 8 */,
+/* 9 */
+/***/ function(module, exports) {
+
+	var SelectRenderEngine = function(element, height, width) {
+	    this.canvas = element;
+	    this.canvas.height = height;
+	    this.canvas.width = width;
+	    this.context = this.canvas.getContext('2d');
+	    this.xScale = width / 13;
+	    this.yScale = height / 67;
+	    this.selectBoard = this.generateArray();
+	};
+	
+	SelectRenderEngine.prototype = {
+	    fillBox: function(x, y, colour) {
+	        this.context.fillStyle = colour.light;
+	        this.context.fillRect(x*this.xScale, y*this.yScale, this.xScale, this.yScale);
+	        // this.context.fillStyle = colour.dark;
+	        // this.context.fillRect((x*this.xScale)+3, (y*this.yScale)+3, this.xScale-6, this.yScale-6);
+	        // this.context.fillStyle = colour.light;
+	        // this.context.fillRect((x*this.xScale)+5, (y*this.yScale)+5, this.xScale-10, this.yScale-10);
+	    },
+	    fillBoard: function(board) {
+	        for (var y = 0; y < board.length; y++) {
+	            for (var x = 0; x < board[y].length; x++) {
+	                this.fillBox(x,y,this.getUserColour(board[y][x]));
+	            }
+	        }
+	    },
+	    getMousePos: function(e) {
+	        var rect = this.canvas.getBoundingClientRect();
+	        var tPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-left'));
+	        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
+	        x = e.clientX - rect.left - lPadding;
+	        y = e.clientY - rect.top - tPadding;
+	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
+	    },
+	    redraw: function(pieces, userColour) {
+	
+	        // if (mouseEvent) {
+	        //     curPos = this.getMousePos(mouseEvent);
+	        // }
+	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	
+	        console.log('here');
+	
+	        this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
+	
+	        this.fillBoard(this.selectBoard);
+	        this.drawGrid();
+	    },
+	    generateArray: function() {
+	        var array = new Array(67);
+	        for (var i = 0; i < 67; i++) {
+	            array[i] = new Array(13);
+	            for (var j = 0; j < 13; j++) {
+	                array[i][j] = null;
+	            }
+	        }
+	        return array;
+	    },
+	    highlightBox: function(pos, userColour, piece) {
+	        this.context.beginPath();
+	        this.context.strokeStyle = this.getUserColour(userColour).light;
+	        this.context.lineWidth = this.scale / 5;
+	        var x = pos.x - 2;
+	        var y = pos.y - 2;
+	        for (var i = 0; i < piece.length; i++) {
+	            if (piece[i]) {
+	                for (var j = 0; j < piece[i].length; j++) {
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'top');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'bottom');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'left');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'right');
+	                }
+	            }
+	        }
+	        this.context.stroke();
+	        this.context.lineWidth = 1;
+	    },
+	    drawBoxPart: function(x, y, box) {
+	        x *= this.scale;
+	        y *= this.scale;
+	        switch (box) {
+	            case 'top':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + 1);
+	                break;
+	            case 'left':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + 1, y + (this.scale-1));
+	                break;
+	            case 'right':
+	                this.context.moveTo(x + (this.scale-1), y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	            case 'bottom':
+	                this.context.moveTo(x + 1, y + (this.scale-1));
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	        }
+	    },
+	    drawGrid: function() {
+	        this.context.beginPath();
+	        var x = 0;
+	        while ( x <= this.canvas.width ) {
+	            this.context.strokeStyle = "#837E7C";
+	            this.context.moveTo(x,0);
+	            this.context.lineTo(x, this.canvas.height);
+	
+	            x += this.xScale;
+	        }
+	        var y = 0;
+	        while ( y <= this.canvas.height ) {
+	            this.context.strokeStyle = "#837E7C";
+	            this.context.moveTo(0,y);
+	            this.context.lineTo(this.canvas.width, y);
+	            y += this.yScale;
+	        }
+	        this.context.stroke();
+	    },
+	    getUserColour: function(colour) {
+	        switch (colour) {
+	            case 'R':
+	                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
+	            case 'G':
+	                return {light: '#4CC417', dark: '#437C17'};//green
+	            case 'B':
+	                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
+	            case 'Y':
+	                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
+	            default:
+	                return {light: '#FFFFFF', dark: '#E5E4E2'};
+	        }
+	    },
+	    fill: function(coordinates, colourString) {
+	        this.selectBoard[coordinates[0]][coordinates[1]] = colourString;
+	    },
+	    placePieces: function(coordinates, pieces, userColour) {
+	        for (var i = 0; i < pieces.length; i++) {
+	            this.placePiece(coordinates[i], pieces[i], userColour);
+	        }
+	    },
+	    placePiece: function(coordinates, piece, userColour){
+	        for (var pair of piece.covered(coordinates)) {
+	            this.fill(pair, userColour);
+	        }
+	    },
+	    generateCenterCoordinates: function() {
+	
+	        var array = [];
+	
+	        for (var i = 0; i < 61; i+=6) {
+	            array.push([(i+3), 3]);
+	            array.push([(i+3), 9]);
+	        }
+	
+	        array.pop();
+	        return array;
+	    }
+	};
+	
+	module.exports = SelectRenderEngine;
 
 
 /***/ }

@@ -1,20 +1,21 @@
-var RenderEngine = function(element, heightWidth) {
+var SelectRenderEngine = function(element, height, width) {
     this.canvas = element;
-    this.canvas.height = heightWidth;
-    this.canvas.width = heightWidth;
+    this.canvas.height = height;
+    this.canvas.width = width;
     this.context = this.canvas.getContext('2d');
-    this.scale = heightWidth / 20;
+    this.xScale = width / 13;
+    this.yScale = height / 67;
+    this.selectBoard = this.generateArray();
 };
 
-RenderEngine.prototype = {
+SelectRenderEngine.prototype = {
     fillBox: function(x, y, colour) {
         this.context.fillStyle = colour.light;
-        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
-        this.context.fillStyle = colour.dark;
-        this.context.fillRect((x*this.scale)+3, (y*this.scale)+3, this.scale-6, this.scale-6);
-        this.context.fillStyle = colour.light;
-        this.context.fillRect((x*this.scale)+5, (y*this.scale)+5, this.scale-10, this.scale-10);
-        this.context.lineWidth = 1;
+        this.context.fillRect(x*this.xScale, y*this.yScale, this.xScale, this.yScale);
+        // this.context.fillStyle = colour.dark;
+        // this.context.fillRect((x*this.xScale)+3, (y*this.yScale)+3, this.xScale-6, this.yScale-6);
+        // this.context.fillStyle = colour.light;
+        // this.context.fillRect((x*this.xScale)+5, (y*this.yScale)+5, this.xScale-10, this.yScale-10);
     },
     fillBoard: function(board) {
         for (var y = 0; y < board.length; y++) {
@@ -31,17 +32,29 @@ RenderEngine.prototype = {
         y = e.clientY - rect.top - tPadding;
         return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
     },
-    redraw: function(board, mouseEvent, userColour, piece) {
-        var curPos = null;
-        if (mouseEvent) {
-            curPos = this.getMousePos(mouseEvent);
-        }
+    redraw: function(pieces, userColour) {
+
+        // if (mouseEvent) {
+        //     curPos = this.getMousePos(mouseEvent);
+        // }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.fillBoard(board);
-        if (curPos &&  userColour &&piece) {
-            this.highlightBox(curPos, userColour, piece);
-        }
+
+        console.log('here');
+
+        this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
+
+        this.fillBoard(this.selectBoard);
         this.drawGrid();
+    },
+    generateArray: function() {
+        var array = new Array(67);
+        for (var i = 0; i < 67; i++) {
+            array[i] = new Array(13);
+            for (var j = 0; j < 13; j++) {
+                array[i][j] = null;
+            }
+        }
+        return array;
     },
     highlightBox: function(pos, userColour, piece) {
         this.context.beginPath();
@@ -86,14 +99,20 @@ RenderEngine.prototype = {
     },
     drawGrid: function() {
         this.context.beginPath();
-        var i = 0;
-        while ( i <= this.canvas.width ) {
+        var x = 0;
+        while ( x <= this.canvas.width ) {
             this.context.strokeStyle = "#837E7C";
-            this.context.moveTo(i,0);
-            this.context.lineTo(i, this.canvas.height);
-            this.context.moveTo(0,i);
-            this.context.lineTo(this.canvas.width, i);
-            i = i + this.scale;
+            this.context.moveTo(x,0);
+            this.context.lineTo(x, this.canvas.height);
+
+            x += this.xScale;
+        }
+        var y = 0;
+        while ( y <= this.canvas.height ) {
+            this.context.strokeStyle = "#837E7C";
+            this.context.moveTo(0,y);
+            this.context.lineTo(this.canvas.width, y);
+            y += this.yScale;
         }
         this.context.stroke();
     },
@@ -110,7 +129,32 @@ RenderEngine.prototype = {
             default:
                 return {light: '#FFFFFF', dark: '#E5E4E2'};
         }
+    },
+    fill: function(coordinates, colourString) {
+        this.selectBoard[coordinates[0]][coordinates[1]] = colourString;
+    },
+    placePieces: function(coordinates, pieces, userColour) {
+        for (var i = 0; i < pieces.length; i++) {
+            this.placePiece(coordinates[i], pieces[i], userColour);
+        }
+    },
+    placePiece: function(coordinates, piece, userColour){
+        for (var pair of piece.covered(coordinates)) {
+            this.fill(pair, userColour);
+        }
+    },
+    generateCenterCoordinates: function() {
+
+        var array = [];
+
+        for (var i = 0; i < 61; i+=6) {
+            array.push([(i+3), 3]);
+            array.push([(i+3), 9]);
+        }
+
+        array.pop();
+        return array;
     }
 };
 
-module.exports = RenderEngine;
+module.exports = SelectRenderEngine;

@@ -3,7 +3,7 @@ var User = require('./models/user.js');
 
 window.onload = function(e) {
 
-    var content = document.getElementById('main_content');
+    var content = document.getElementById('load_in_content');
     loadPage('login.html', content, createLoginScreen);
 
 };
@@ -35,7 +35,7 @@ var createLoginScreen = function() {
                 users[i] = 'Player ' + (i + 1);
             }
         }
-        loadPage('gameboard.html', document.getElementById('main_content'), function() {
+        loadPage('gameboard.html', document.getElementById('load_in_content'), function() {
             createGameBoard(users);
         });
     });
@@ -43,9 +43,10 @@ var createLoginScreen = function() {
 
 var createGameBoard = function(users) {
     var canvas = document.getElementById('gameboard');
+    var selectCanvas = document.getElementById('selectpanel');
     // var users = ["Frank", "Jimmy", "Colin", "Dave"];
 
-    var game = new Game(users, canvas, 600);
+    var game = new Game(users, canvas, 600, selectCanvas);
     game.redraw();
 
     canvas.addEventListener('click', function(e) {

@@ -1,12 +1,12 @@
-var RenderEngine = function(element, heightWidth) {
-    this.canvas = element;
-    this.canvas.height = heightWidth;
-    this.canvas.width = heightWidth;
+var PreviewRenderEngine = function(height, width) {
+    this.canvas = null;
+    this.height = height;
+    this.width = width;
     this.context = this.canvas.getContext('2d');
-    this.scale = heightWidth / 20;
+    this.scale = width / 20;
 };
 
-RenderEngine.prototype = {
+PreviewRenderEngine.prototype = {
     fillBox: function(x, y, colour) {
         this.context.fillStyle = colour.light;
         this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
@@ -100,17 +100,17 @@ RenderEngine.prototype = {
     getUserColour: function(colour) {
         switch (colour) {
             case 'R':
-                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
+                return {light: '#F62217', dark: '#800517'};
             case 'G':
-                return {light: '#4CC417', dark: '#437C17'};//green
+                return {light: '#4CC417', dark: '#437C17'};
             case 'B':
-                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
+                return {light: '#488AC7', dark: '#1F45FC'};
             case 'Y':
-                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
+                return {light: '#FFFF00', dark: '#C68E17'};
             default:
                 return {light: '#FFFFFF', dark: '#E5E4E2'};
         }
     }
 };
 
-module.exports = RenderEngine;
+module.exports = PreviewRenderEngine;

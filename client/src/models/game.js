@@ -1,15 +1,17 @@
 var GameBoard = require('./gameboard.js');
 var RenderEngine = require('./renderengine.js');
+var SelectRenderEngine = require('./selectrenderengine.js');
 var PresetPieces = require('./pieceRels.js');
 var GamePiece = require('./gamepiece.js');
 var User = require('./user.js');
 var Log = require('./log.js');
 
-var Game = function(users, canvasElement, canvasWidth) {
+var Game = function(users, canvasElement, canvasWidth, selectCanvasElement) {
     this.users = [];
     this.currentUser = 0;
     this.board = new GameBoard();
     this.render = new RenderEngine(canvasElement, canvasWidth);
+    this.selectRenderEngine = new SelectRenderEngine(selectCanvasElement, 600, 140);
     this.log = new Log();
 
     this.playing = true;
@@ -91,6 +93,8 @@ Game.prototype = {
             if (!this.checkPlayerPlaying(this.currentUser)) {
                 this.nextPlayer();
             }
+            var currUser = this.currUser();
+            this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
         } else {
             this.playing = false;
             this.render.redraw(this.board.boardArray);
@@ -98,7 +102,7 @@ Game.prototype = {
             winnerString = '';
             for (var winner of winners) {
                 winnerString += winner.name + ' ';
-            } 
+            }
         alert(winnerString + ", you are the winner!");
         }
     },
@@ -108,7 +112,7 @@ Game.prototype = {
             userObjects.push({
                 name: this.users[i].name,
                 score: this.board[this.users[i].colourCode()]
-            })
+            });
         }
         userObjects.sort(function(a,b) {
             if (a.score > b.score) {
@@ -130,12 +134,6 @@ Game.prototype = {
         winners.push(firstWinner);
         return winners;
     },
-
-
-
-
-
-
     checkPlayerPlaying: function(index) {
         return this.users[index].playing;
     },
@@ -172,6 +170,12 @@ Game.prototype = {
     },
     redraw: function() {
         this.render.redraw(this.board.boardArray);
+
+        var currUser = this.currUser();
+
+        console.log('redraw');
+
+        this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
     },
     skipTurn: function() {
         if (this.playing) {

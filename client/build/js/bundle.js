@@ -742,10 +742,6 @@
 /***/ function(module, exports) {
 
 	var GameBoard = function() {
-	    // this.board = new Array(20);
-	    // for (var i = 0; i < 20; i++) {
-	    //   this.board[i] = new Array(20);
-	    // }
 	    this.boardArray = this.generateBoardArray();
 	    this.R = 0;
 	    this.G = 0;
@@ -874,22 +870,6 @@
 	        return false;
 	    }
 	};
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	module.exports = GameBoard;
 

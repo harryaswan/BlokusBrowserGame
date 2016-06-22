@@ -9,7 +9,7 @@ describe('Game', function() {
         user2 = new User('Colin', 'Blue');
         user3 = new User('Fred', 'Green');
         user4 = new User('Mikael', 'Yellow');
-        game = new Game([user1, user2, user3, user4]);
+        game = new Game([user1, user2, user3, user4], null, null, null, true);
 
     });
     it('has users', function() {
@@ -17,6 +17,6 @@ describe('Game', function() {
     });
     it('can assign pieces to users', function() {
         game.assignPieces();
-        assert.equal(21, user2.pieces.length);
+        assert.equal(21, game.users[1].pieces.length);
     });
 });

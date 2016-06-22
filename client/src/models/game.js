@@ -6,12 +6,14 @@ var GamePiece = require('./gamepiece.js');
 var User = require('./user.js');
 var Log = require('./log.js');
 
-var Game = function(users, canvasElement, canvasWidth, selectCanvasElement) {
+var Game = function(users, canvasElement, canvasWidth, selectCanvasElement, debug) {
     this.users = [];
     this.currentUser = 0;
     this.board = new GameBoard();
-    this.render = new RenderEngine(canvasElement, canvasWidth);
-    this.selectRenderEngine = new SelectRenderEngine(selectCanvasElement, 600, 140);
+    if (!debug) {
+        this.render = new RenderEngine(canvasElement, canvasWidth);
+        this.selectRenderEngine = new SelectRenderEngine(selectCanvasElement, 600, 140);
+    }
     this.log = new Log();
 
     this.playing = true;
@@ -30,7 +32,6 @@ Game.prototype = {
         for (var i = 0; i < this.users.length; i++) {
             this.log.addData('username', this.users[i].name);
         }
-        console.log("Your game id is:", this.uID);
     },
     createUsers: function(users) {
         for (var i = 0; i < users.length; i++) {
@@ -252,10 +253,10 @@ Game.prototype = {
             var green_score = document.getElementById('green_score');
 
 
-            blue.innerText = users[0].name;
-            yellow.innerText = users[1].name;
-            red.innerText = users[2].name;
-            green.innerText = users[3].name;
+            blue.innerText = users[0].name + ": ";
+            yellow.innerText = users[1].name + ": ";
+            red.innerText = users[2].name + ": ";
+            green.innerText = users[3].name + ": ";
 
             blue_score.innerText = this.board[this.users[0].colourCode()];
             yellow_score.innerText = this.board[this.users[1].colourCode()];

@@ -72,18 +72,6 @@ body {
   padding: 10px;
 }
 
-#preview1 {
-  padding: 10px;
-}
-
-#preview2 {
-  padding: 10px;
-}
-
-#preview3 {
-  padding: 10px;
-}
-
 #selectpanel {
   padding: 20px;
   margin-left: -10px;
@@ -125,6 +113,11 @@ text-shadow: 2px 2px white;
   background-color: white;
   font-family: blokus;
   color: black;
+}
+#buttons_zone {
+    width: 600px;
+    margin: 0;
+    
 }
 
 /*

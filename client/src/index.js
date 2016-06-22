@@ -46,31 +46,6 @@ var createLoginScreen = function() {
     });
 };
 
-var displayScoreBoard = function(game) {
-
-    var users = game.users;
-    var currUser = game.currentUser;
-    var blue = document.getElementById("blue_player");
-    var yellow = document.getElementById("yellow_player");
-    var red = document.getElementById("red_player");
-    var green = document.getElementById("green_player");
-    var blue_score = document.getElementById('blue_score');
-    var yellow_score = document.getElementById('yellow_score');
-    var red_score = document.getElementById('red_score');
-    var green_score = document.getElementById('green_score');
-
-
-    blue.innerText = users[0].name;
-    yellow.innerText = users[1].name;
-    red.innerText = users[2].name;
-    green.innerText = users[3].name;
-
-    blue_score.innerText = game.board[game.users[0].colourCode()];
-    yellow_score.innerText = game.board[game.users[1].colourCode()];
-    red_score.innerText = game.board[game.users[2].colourCode()];
-    green_score.innerText = game.board[game.users[3].colourCode()];
-}
-
 var createGameBoard = function(users, logNumber) {
     var canvas = document.getElementById('gameboard');
     var selectCanvas = document.getElementById('selectpanel');
@@ -84,7 +59,6 @@ var createGameBoard = function(users, logNumber) {
         game = new Game(users, canvas, 600, selectCanvas);
     }
 
-    displayScoreBoard(game);
     game.redraw();
 
     selectCanvas.addEventListener('click', function(e) {
@@ -93,7 +67,6 @@ var createGameBoard = function(users, logNumber) {
 
     canvas.addEventListener('click', function(e) {
         game.placePiece(e);
-        displayScoreBoard(game);
     });
     canvas.addEventListener('mousemove', function(e) {
         game.onHover(e);
@@ -110,6 +83,15 @@ var createGameBoard = function(users, logNumber) {
 
     document.getElementById('skip_button').addEventListener('click', function(e) {
         game.skipTurn();
+    });
+    document.getElementById('save_button').addEventListener('click', function(e) {
+        game.saveLog();
+    });
+    document.getElementById('rotate_button').addEventListener('click', function(e) {
+        game.rotatePiece();
+    });
+    document.getElementById('flip_button').addEventListener('click', function(e) {
+        game.flipPiece();
     });
 
 

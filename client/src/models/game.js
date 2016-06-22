@@ -85,6 +85,7 @@ Game.prototype = {
                 if (!this.logPlaying) {
                     this.log.addData('place', {pos:cPos, rel:curPiece.relative});
                 }
+                this.displayScoreBoard();
             } else {
                 new Audio('single_oil_can.mp3').play();
             }
@@ -161,7 +162,9 @@ Game.prototype = {
     onHover: function(e) {
         if (this.playing) {
             var curUser = this.currUser();
-            this.render.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+            if (curUser.getSelectedPiece()) {
+                this.render.redraw(this.board.boardArray, e, curUser.colourCode(), curUser.getSelectedPiece().relative);
+            }
         }
     },
     rotatePiece: function() {
@@ -177,7 +180,9 @@ Game.prototype = {
     redraw: function() {
         this.render.redraw(this.board.boardArray);
         var currUser = this.currUser();
-        this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
+        if (currUser) {
+            this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
+        }
     },
     skipTurn: function() {
         if (this.playing) {
@@ -230,6 +235,34 @@ Game.prototype = {
         var index = this.selectRenderEngine.getClickBox(this.selectRenderEngine.getMousePos(e));
         var currentUser = this.currUser();
         currentUser.selectPiece(index);
+        new Audio("double_down_click.mp3").play();
+    },
+    displayScoreBoard: function() {
+
+        var users = this.users;
+        if (users.length > 0) {
+            var currUser = this.currentUser;
+            var blue = document.getElementById("blue_player");
+            var yellow = document.getElementById("yellow_player");
+            var red = document.getElementById("red_player");
+            var green = document.getElementById("green_player");
+            var blue_score = document.getElementById('blue_score');
+            var yellow_score = document.getElementById('yellow_score');
+            var red_score = document.getElementById('red_score');
+            var green_score = document.getElementById('green_score');
+
+
+            blue.innerText = users[0].name;
+            yellow.innerText = users[1].name;
+            red.innerText = users[2].name;
+            green.innerText = users[3].name;
+
+            blue_score.innerText = this.board[this.users[0].colourCode()];
+            yellow_score.innerText = this.board[this.users[1].colourCode()];
+            red_score.innerText = this.board[this.users[2].colourCode()];
+            green_score.innerText = this.board[this.users[3].colourCode()];
+        }
+
     }
 };
 

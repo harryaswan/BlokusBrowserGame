@@ -120,6 +120,12 @@
 	    green_score.innerText = game.board[game.users[3].colourCode()];
 	}
 	
+	var displayGameNumber = function(game) {
+	    var gameNumber = document.getElementById('game_number');
+	    gameNumber.style.color = 'white';
+	    gameNumber.innerText = "Game ID: " + game.uID;
+	}
+	
 	var createGameBoard = function(users, logNumber) {
 	    var canvas = document.getElementById('gameboard');
 	    var selectCanvas = document.getElementById('selectpanel');
@@ -133,6 +139,7 @@
 	    }
 	
 	    displayScoreBoard(game);
+	    displayGameNumber(game);
 	    game.redraw();
 	
 	    selectCanvas.addEventListener('click', function(e) {
@@ -908,7 +915,7 @@
 	        [[ ], [2], [2,3], [2,3], [ ]],
 	        [[ ], [2,3], [1,2], [1], [ ]],
 	        [[ ], [2,3], [2], [2,3], [ ]],
-	        [[ ], [ 2,3], [1,2], [ 1], [ ]],
+	        [[ ], [ 2,3], [1,2], [ 2], [ ]],
 	        [[ ], [2], [1,2,3], [2], [ ]],
 	        [[ ], [2], [1,2,3,4], [ ], [ ]]
 	    ];

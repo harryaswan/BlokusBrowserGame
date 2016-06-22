@@ -74,6 +74,12 @@ var displayScoreBoard = function(game) {
     green_score.innerText = game.board[game.users[3].colourCode()];
 }
 
+var displayGameNumber = function(game) {
+    var gameNumber = document.getElementById('game_number');
+    gameNumber.style.color = 'white';
+    gameNumber.innerText = "Game ID: " + game.uID;
+}
+
 var createGameBoard = function(users, logNumber) {
     var canvas = document.getElementById('gameboard');
     var selectCanvas = document.getElementById('selectpanel');
@@ -87,6 +93,7 @@ var createGameBoard = function(users, logNumber) {
     }
 
     displayScoreBoard(game);
+    displayGameNumber(game);
     game.redraw();
 
     selectCanvas.addEventListener('click', function(e) {

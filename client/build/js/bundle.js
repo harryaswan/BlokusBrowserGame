@@ -75,7 +75,6 @@
 	        var green = document.getElementById('green_user').value;
 	        var users = [];
 	        users = [blue, yellow, red, green];
-	        console.log(users);
 	        for (var i = 0; i < users.length; i++) {
 	            if (users[i] === '') {
 	                users[i] = 'Player ' + (i + 1);
@@ -86,12 +85,10 @@
 	        });
 	    });
 	    document.getElementById('load_button').addEventListener('click', function(e) {
-	        var logNumber = document.getElementById('gameid_input').value; 
+	        var logNumber = document.getElementById('gameid_input').value;
 	        loadPage('gameboard.html', document.getElementById('load_in_content'), function() {
-	            createGameBoard(null, parseInt(logNumber)); 
+	            createGameBoard(null, parseInt(logNumber));
 	        });
-	        console.log('load');
-	        
 	    });
 	};
 	
@@ -103,11 +100,11 @@
 	    var yellow = document.getElementById("yellow_player");
 	    var red = document.getElementById("red_player");
 	    var green = document.getElementById("green_player");
-	    var blue_score = document.getElementById('blue_score'); 
-	    var yellow_score = document.getElementById('yellow_score'); 
-	    var red_score = document.getElementById('red_score'); 
-	    var green_score = document.getElementById('green_score'); 
-	    
+	    var blue_score = document.getElementById('blue_score');
+	    var yellow_score = document.getElementById('yellow_score');
+	    var red_score = document.getElementById('red_score');
+	    var green_score = document.getElementById('green_score');
+	
 	
 	    blue.innerText = users[0].name;
 	    yellow.innerText = users[1].name;
@@ -127,7 +124,8 @@
 	    var game = null;
 	    if (logNumber){
 	        game = new Game([], canvas, 600, selectCanvas);
-	        game.loadLog(parseInt(logNumber));   
+	        game.redraw();
+	        game.loadLog(parseInt(logNumber));
 	    } else {
 	        game = new Game(users, canvas, 600, selectCanvas);
 	    }
@@ -149,19 +147,14 @@
 	    window.addEventListener('keyup', function(e) {
 	        if (e.keyCode === 82) {
 	            game.rotatePiece();
-	            console.log('rotate');
 	        } else if (e.keyCode === 70) {
 	            game.flipPiece();
-	            console.log('flip');
 	        } else if (e.keyCode === 83) {
 	            game.saveLog();
-	        } else if (e.keyCode ===76) {
-	            game.loadLog();
 	        }
 	    });
 	
 	    document.getElementById('skip_button').addEventListener('click', function(e) {
-	        console.log('skip/end play');
 	        game.skipTurn();
 	    });
 	
@@ -483,7 +476,7 @@
 
 	var GameBoard = __webpack_require__(4);
 	var RenderEngine = __webpack_require__(2);
-	var SelectRenderEngine = __webpack_require__(8);
+	var SelectRenderEngine = __webpack_require__(9);
 	var PresetPieces = __webpack_require__(5);
 	var GamePiece = __webpack_require__(1);
 	var User = __webpack_require__(6);
@@ -560,8 +553,6 @@
 	            } else {
 	                curPiece = curUser.getSelectedPiece();
 	            }
-	            console.log('placing', cPos);
-	            console.log('placing', curPiece);
 	            if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
 	                new Audio('metal_off_switch.mp3').play();
 	                curUser.removeSelectedPiece();
@@ -661,11 +652,7 @@
 	    },
 	    redraw: function() {
 	        this.render.redraw(this.board.boardArray);
-	
 	        var currUser = this.currUser();
-	
-	        console.log('redraw');
-	
 	        this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
 	    },
 	    skipTurn: function() {
@@ -703,7 +690,6 @@
 	        }
 	    },
 	    makeLogMove: function(action, options, game) {
-	        console.log('action', action);
 	        switch (action) {
 	            case 'place':
 	                game.placePiece(options.pos, options.rel);
@@ -718,7 +704,8 @@
 	    },
 	    userSelectPiece: function(e) {
 	        var index = this.selectRenderEngine.getClickBox(this.selectRenderEngine.getMousePos(e));
-	        this.currUser().selectPiece(index);
+	        var currentUser = this.currUser();
+	        currentUser.selectPiece(index);
 	    }
 	};
 	
@@ -1061,7 +1048,7 @@
 	    this.name = name;
 	    this.colour = colour;
 	    this.pieces = [];
-	    this.selectedPieceIndex = 0;
+	    this.selectedPieceIndex = null;
 	    this.playing = true;
 	};
 	
@@ -1086,7 +1073,7 @@
 	    },
 	    removeSelectedPiece: function() {
 	        this.pieces.splice(this.selectedPieceIndex, 1);
-	        this.selectPiece = null;
+	        this.selectedPieceIndex = null;
 	        if (this.pieces.length === 0) {
 	            this.playing = false;
 	        }
@@ -1116,7 +1103,6 @@
 	    },
 	    addData: function(action, options) {
 	        this.data.push({action: action, options: options});//action = skip or place; options = rel + position
-	        console.log(this.data);
 	    },
 	    grabData: function() {
 	        var data = this.data[this.currentIndex];
@@ -1131,23 +1117,15 @@
 	    },
 	    saveData: function() {
 	        var request = new XMLHttpRequest();
-	        request.onload = function() {
-	            if (request.status === 200) {
-	                console.log('saved the data');
-	            }
-	        };
 	        request.open('POST', 'savelog');
 	        request.setRequestHeader('Content-Type', 'application/json');
 	        var data = {game: this.gameID, data: this.data};
-	        console.log(JSON.stringify(data));
 	        request.send(JSON.stringify(data));
 	    },
 	    loadData: function(callback, context) {
 	        var request = new XMLHttpRequest();
 	        request.onload = function() {
 	            if (request.status === 200) {
-	                console.log('got the data');
-	                console.log(request.responseText);
 	                callback(JSON.parse(request.responseText)[0], context);
 	            }
 	        };
@@ -1158,17 +1136,13 @@
 	    setData: function(data) {
 	        this.data = data;
 	    }
-	
 	};
-	
-	
-	
-	
 	module.exports = Log;
 
 
 /***/ },
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ function(module, exports) {
 
 	var SelectRenderEngine = function(element, height, width) {
@@ -1206,18 +1180,9 @@
 	        return {x: parseInt(x / this.xScale), y: parseInt(y / this.yScale)};
 	    },
 	    redraw: function(pieces, userColour) {
-	
-	        // if (mouseEvent) {
-	        //     curPos = this.getMousePos(mouseEvent);
-	        // }
 	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	
-	        console.log('click');
-	
 	        this.selectBoard = this.generateArray();
-	
 	        this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
-	
 	        this.fillBoard(this.selectBoard);
 	        this.drawGrid();
 	    },
@@ -1332,8 +1297,6 @@
 	    },
 	    getClickBox: function(pos) {
 	        var index = 0;
-	        console.log(pos);
-	
 	        for (var x = 0; x < 11; x++) {
 	            if (pos.x > 0 && pos.x < 6) {
 	                if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
@@ -1347,9 +1310,7 @@
 	                }
 	            }
 	            index++;
-	            console.log('index',index);
 	        }
-	
 	    }
 	};
 	

@@ -2,7 +2,7 @@ var User = function(name, colour) {
     this.name = name;
     this.colour = colour;
     this.pieces = [];
-    this.selectedPieceIndex = 0;
+    this.selectedPieceIndex = null;
     this.playing = true;
 };
 
@@ -27,7 +27,7 @@ User.prototype = {
     },
     removeSelectedPiece: function() {
         this.pieces.splice(this.selectedPieceIndex, 1);
-        this.selectPiece = null;
+        this.selectedPieceIndex = null;
         if (this.pieces.length === 0) {
             this.playing = false;
         }

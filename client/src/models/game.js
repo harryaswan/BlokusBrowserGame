@@ -77,8 +77,6 @@ Game.prototype = {
             } else {
                 curPiece = curUser.getSelectedPiece();
             }
-            console.log('placing', cPos);
-            console.log('placing', curPiece);
             if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
                 new Audio('metal_off_switch.mp3').play();
                 curUser.removeSelectedPiece();
@@ -178,11 +176,7 @@ Game.prototype = {
     },
     redraw: function() {
         this.render.redraw(this.board.boardArray);
-
         var currUser = this.currUser();
-
-        console.log('redraw');
-
         this.selectRenderEngine.redraw(currUser.pieces, currUser.colourCode());
     },
     skipTurn: function() {
@@ -220,7 +214,6 @@ Game.prototype = {
         }
     },
     makeLogMove: function(action, options, game) {
-        console.log('action', action);
         switch (action) {
             case 'place':
                 game.placePiece(options.pos, options.rel);
@@ -235,7 +228,8 @@ Game.prototype = {
     },
     userSelectPiece: function(e) {
         var index = this.selectRenderEngine.getClickBox(this.selectRenderEngine.getMousePos(e));
-        this.currUser().selectPiece(index);
+        var currentUser = this.currUser();
+        currentUser.selectPiece(index);
     }
 };
 

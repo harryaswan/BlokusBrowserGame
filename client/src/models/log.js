@@ -11,7 +11,6 @@ Log.prototype = {
     },
     addData: function(action, options) {
         this.data.push({action: action, options: options});//action = skip or place; options = rel + position
-        console.log(this.data);
     },
     grabData: function() {
         var data = this.data[this.currentIndex];
@@ -26,23 +25,15 @@ Log.prototype = {
     },
     saveData: function() {
         var request = new XMLHttpRequest();
-        request.onload = function() {
-            if (request.status === 200) {
-                console.log('saved the data');
-            }
-        };
         request.open('POST', 'savelog');
         request.setRequestHeader('Content-Type', 'application/json');
         var data = {game: this.gameID, data: this.data};
-        console.log(JSON.stringify(data));
         request.send(JSON.stringify(data));
     },
     loadData: function(callback, context) {
         var request = new XMLHttpRequest();
         request.onload = function() {
             if (request.status === 200) {
-                console.log('got the data');
-                console.log(request.responseText);
                 callback(JSON.parse(request.responseText)[0], context);
             }
         };
@@ -53,10 +44,5 @@ Log.prototype = {
     setData: function(data) {
         this.data = data;
     }
-
 };
-
-
-
-
 module.exports = Log;

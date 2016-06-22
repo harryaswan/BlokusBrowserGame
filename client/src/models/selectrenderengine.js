@@ -33,18 +33,9 @@ SelectRenderEngine.prototype = {
         return {x: parseInt(x / this.xScale), y: parseInt(y / this.yScale)};
     },
     redraw: function(pieces, userColour) {
-
-        // if (mouseEvent) {
-        //     curPos = this.getMousePos(mouseEvent);
-        // }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        console.log('click');
-
         this.selectBoard = this.generateArray();
-
         this.placePieces(this.generateCenterCoordinates(), pieces, userColour);
-
         this.fillBoard(this.selectBoard);
         this.drawGrid();
     },
@@ -159,8 +150,6 @@ SelectRenderEngine.prototype = {
     },
     getClickBox: function(pos) {
         var index = 0;
-        console.log(pos);
-
         for (var x = 0; x < 11; x++) {
             if (pos.x > 0 && pos.x < 6) {
                 if (pos.y > (6*x)+1 && pos.y < (6*x)+5) {
@@ -174,9 +163,7 @@ SelectRenderEngine.prototype = {
                 }
             }
             index++;
-            console.log('index',index);
         }
-
     }
 };
 

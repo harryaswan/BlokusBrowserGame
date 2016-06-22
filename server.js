@@ -14,8 +14,6 @@ app.get('/', function (req, res) {
 app.post('/savelog', function(req, res) {
     var data = req.body.data;
     var gameID = req.body.game;
-    console.log(data);
-    console.log(gameID);
     MongoClient.connect(url, function(err, db) {
         var collection = db.collection('game_logs');
         collection.update({game: gameID}, {game: gameID, data: data}, {upsert: true});
@@ -26,11 +24,9 @@ app.post('/savelog', function(req, res) {
 
 app.post('/loadlog', function(req, res) {
     var gameID = req.body.game;
-    console.log('gid', gameID);
     MongoClient.connect(url, function(err, db) {
         var collection = db.collection('game_logs');
         collection.find({game: gameID}).toArray(function(err, docs) {
-            console.log('docs', docs);
             res.json(docs);
             db.close();
         });
@@ -43,5 +39,5 @@ app.use(express.static('client/build'));
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
-  console.log('Example app listening at %s', "http://localhost:3000");
+  console.log("Blokus by BlokHeedz is Running on http://localhost:3000");
 });

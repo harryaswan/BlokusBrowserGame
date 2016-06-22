@@ -29,7 +29,6 @@ var createLoginScreen = function() {
         var green = document.getElementById('green_user').value;
         var users = [];
         users = [blue, yellow, red, green];
-        console.log(users);
         for (var i = 0; i < users.length; i++) {
             if (users[i] === '') {
                 users[i] = 'Player ' + (i + 1);
@@ -40,12 +39,10 @@ var createLoginScreen = function() {
         });
     });
     document.getElementById('load_button').addEventListener('click', function(e) {
-        var logNumber = document.getElementById('gameid_input').value; 
+        var logNumber = document.getElementById('gameid_input').value;
         loadPage('gameboard.html', document.getElementById('load_in_content'), function() {
-            createGameBoard(null, parseInt(logNumber)); 
+            createGameBoard(null, parseInt(logNumber));
         });
-        console.log('load');
-        
     });
 };
 
@@ -57,11 +54,11 @@ var displayScoreBoard = function(game) {
     var yellow = document.getElementById("yellow_player");
     var red = document.getElementById("red_player");
     var green = document.getElementById("green_player");
-    var blue_score = document.getElementById('blue_score'); 
-    var yellow_score = document.getElementById('yellow_score'); 
-    var red_score = document.getElementById('red_score'); 
-    var green_score = document.getElementById('green_score'); 
-    
+    var blue_score = document.getElementById('blue_score');
+    var yellow_score = document.getElementById('yellow_score');
+    var red_score = document.getElementById('red_score');
+    var green_score = document.getElementById('green_score');
+
 
     blue.innerText = users[0].name;
     yellow.innerText = users[1].name;
@@ -81,7 +78,8 @@ var createGameBoard = function(users, logNumber) {
     var game = null;
     if (logNumber){
         game = new Game([], canvas, 600, selectCanvas);
-        game.loadLog(parseInt(logNumber));   
+        game.redraw();
+        game.loadLog(parseInt(logNumber));
     } else {
         game = new Game(users, canvas, 600, selectCanvas);
     }
@@ -103,19 +101,14 @@ var createGameBoard = function(users, logNumber) {
     window.addEventListener('keyup', function(e) {
         if (e.keyCode === 82) {
             game.rotatePiece();
-            console.log('rotate');
         } else if (e.keyCode === 70) {
             game.flipPiece();
-            console.log('flip');
         } else if (e.keyCode === 83) {
             game.saveLog();
-        } else if (e.keyCode ===76) {
-            game.loadLog();
         }
     });
 
     document.getElementById('skip_button').addEventListener('click', function(e) {
-        console.log('skip/end play');
         game.skipTurn();
     });
 

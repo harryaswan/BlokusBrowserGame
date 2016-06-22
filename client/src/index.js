@@ -49,7 +49,6 @@ var createLoginScreen = function() {
 var createGameBoard = function(users, logNumber) {
     var canvas = document.getElementById('gameboard');
     var selectCanvas = document.getElementById('selectpanel');
-    // var users = ["Frank", "Jimmy", "Colin", "Dave"];
     var game = null;
     if (logNumber){
         game = new Game([], canvas, 600, selectCanvas);

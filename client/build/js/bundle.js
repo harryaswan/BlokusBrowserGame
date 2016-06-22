@@ -95,7 +95,6 @@
 	var createGameBoard = function(users, logNumber) {
 	    var canvas = document.getElementById('gameboard');
 	    var selectCanvas = document.getElementById('selectpanel');
-	    // var users = ["Frank", "Jimmy", "Colin", "Dave"];
 	    var game = null;
 	    if (logNumber){
 	        game = new Game([], canvas, 600, selectCanvas);
@@ -709,7 +708,7 @@
 	            var yellow_score = document.getElementById('yellow_score');
 	            var red_score = document.getElementById('red_score');
 	            var green_score = document.getElementById('green_score');
-	
+	            var gameNumber = document.getElementById('game_number');
 	
 	            blue.innerText = users[0].name + ": ";
 	            yellow.innerText = users[1].name + ": ";
@@ -720,6 +719,9 @@
 	            yellow_score.innerText = this.board[this.users[1].colourCode()];
 	            red_score.innerText = this.board[this.users[2].colourCode()];
 	            green_score.innerText = this.board[this.users[3].colourCode()];
+	
+	            gameNumber.style.color = 'white';
+	            gameNumber.innerText = "Game ID: " + this.uID;
 	        }
 	
 	    }
@@ -911,7 +913,7 @@
 	        [[ ], [2], [2,3], [2,3], [ ]],
 	        [[ ], [2,3], [1,2], [1], [ ]],
 	        [[ ], [2,3], [2], [2,3], [ ]],
-	        [[ ], [ 2,3], [1,2], [ 1], [ ]],
+	        [[ ], [ 2,3], [1,2], [ 2], [ ]],
 	        [[ ], [2], [1,2,3], [2], [ ]],
 	        [[ ], [2], [1,2,3,4], [ ], [ ]]
 	    ];

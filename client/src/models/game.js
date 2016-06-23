@@ -80,7 +80,7 @@ Game.prototype = {
             }
             if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
                 new Audio('metal_off_switch.mp3').play();
-                curUser.removeSelectedPiece();
+                curUser.removeSelectedPiece(curPiece);
                 this.render.redraw(this.board.boardArray);
                 this.nextPlayer();
                 if (!this.logPlaying) {

@@ -536,7 +536,7 @@
 	            }
 	            if (this.board.placePiece([cPos.y, cPos.x], curPiece, curUser.colourCode())) {
 	                new Audio('metal_off_switch.mp3').play();
-	                curUser.removeSelectedPiece();
+	                curUser.removeSelectedPiece(curPiece);
 	                this.render.redraw(this.board.boardArray);
 	                this.nextPlayer();
 	                if (!this.logPlaying) {
@@ -1047,8 +1047,9 @@
 
 /***/ },
 /* 6 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var GamePiece = __webpack_require__(1);
 	var User = function(name, colour) {
 	    this.name = name;
 	    this.colour = colour;
@@ -1076,8 +1077,29 @@
 	    flipPiece: function() {
 	        this.pieces[this.selectedPieceIndex].flip();
 	    },
-	    removeSelectedPiece: function() {
-	        this.pieces.splice(this.selectedPieceIndex, 1);
+	    removeSelectedPiece: function(piece) {
+	        var index = null;
+	        for (var i = 0; i < this.pieces.length; i++) {
+	            var origRel = this.pieces[i].relative;
+	            for (var z = 0; z < 4; z++) {
+	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
+	                    index = i;
+	                }
+	                this.pieces[i].rotate();
+	            }
+	            for (var z = 0; z < 4; z++) {
+	                this.pieces[i].rotate();
+	                this.pieces[i].flip();
+	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
+	                    index = i;
+	                }
+	                this.pieces[i].flip();
+	            }
+	            this.pieces[i] = new GamePiece(origRel);
+	        }
+	        if (index !== null) {
+	            this.pieces.splice(index, 1);
+	        }
 	        this.selectedPieceIndex = null;
 	        if (this.pieces.length === 0) {
 	            this.playing = false;

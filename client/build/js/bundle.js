@@ -44,8 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Game = __webpack_require__(3);
-	var User = __webpack_require__(6);
+	var Game = __webpack_require__(1);
+	var User = __webpack_require__(7);
 	
 	window.onload = function(e) {
 	
@@ -144,323 +144,15 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	var GamePiece = function(tiles) {
-	    this.relative = tiles;
-	    this.array = this.generateArray();
-	    this.setup(tiles);
-	
-	};
-	
-	GamePiece.prototype = {
-	
-	    setup: function(input) {
-	        for (var array of input) {
-	            if (array.length > 0) {
-	                for (var element of array) {
-	                    this.changeTile(element, input.indexOf(array), 1);
-	                }
-	            }
-	        }
-	    },
-	    changeTile: function(x, y, value) {
-	        this.array[y][x] = value;
-	    },
-	    corners: function(coordinates) {
-	        var startY = coordinates[0] - 2;
-	        var startX = coordinates[1] - 2;
-	        var corners = [];
-	        for (var y = 0; y < this.array.length; y++) {
-	            for (var x = 0; x < this.array[y].length; x++) {
-	
-	                if (this.array[y][x]) {
-	                    if (this.array[y + 1]) {
-	                        if (!this.array[y][x + 1] && !this.array[y + 1][x]) {
-	                            corners.push([startY + y + 1, startX + x + 1]);
-	                        }
-	                        if (!this.array[y][x - 1] && !this.array[y + 1][x]) {
-	                            corners.push([startY + y + 1, startX + x - 1]);
-	                        }
-	                    } else if (this.array[y + 1] === undefined) {
-	                        if (!this.array[y][x + 1]) {
-	                            corners.push([startY + y + 1, startX + x + 1]);
-	                        }
-	                        if (!this.array[y][x - 1]) {
-	                            corners.push([startY + y + 1, startX + x - 1]);
-	                        }
-	                    }
-	
-	                    if (this.array[y - 1]) {
-	                        if (!this.array[y][x + 1] && !this.array[y - 1][x]) {
-	                            corners.push([startY + y - 1, startX + x + 1]);
-	                        }
-	                        if (!this.array[y][x - 1] && !this.array[y - 1][x]) {
-	                            corners.push([startY + y - 1, startX + x - 1]);
-	                        }
-	                    } else if (this.array[y -1] === undefined) {
-	                        if (!this.array[y][x + 1]) {
-	                            corners.push([startY + y - 1, startX + x + 1]);
-	                        }
-	                        if (!this.array[y][x - 1]) {
-	                            corners.push([startY + y - 1, startX + x - 1]);
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        return this.unique(corners);
-	    },
-	
-	    flats: function(coordinates) {
-	        var startY = coordinates[0] - 2;
-	        var startX = coordinates[1] - 2;
-	        var flatsArray = [];
-	        for (var y = 0; y < this.array.length; y++) {
-	            for (var x = 0; x < this.array[y].length; x++) {
-	
-	                if (this.array[y][x]) {
-	
-	                      if (!this.array[y][x + 1]) {
-	                          flatsArray.push([startY + y, startX + x + 1]);
-	                      }
-	
-	                      if (!this.array[y][x - 1]) {
-	                          flatsArray.push([startY + y, startX + x - 1]);
-	                      }
-	
-	                      if (this.array[y + 1]){
-	                        if (!this.array[y + 1][x] || this.array[y + 1][x] === undefined) {
-	                          flatsArray.push([startY + y + 1, startX + x]);
-	                        }
-	                      }else{
-	                        flatsArray.push([startY + y + 1, startX + x]);
-	                      }
-	
-	                      if (this.array[y - 1]){
-	                        if (!this.array[y - 1][x] || this.array[y - 1][x] === undefined) {
-	
-	                          flatsArray.push([startY + y - 1, startX + x]);
-	                        }
-	                      }else{
-	                        flatsArray.push([startY + y - 1, startX + x]);
-	                      }
-	                }
-	            }
-	        }
-	        return this.unique(flatsArray);
-	    },
-	
-	    covered: function(coordinates) {
-	        var startY = coordinates[0] - 2;
-	        var startX = coordinates[1] - 2;
-	        coveredSquares = [];
-	        for (var y = 0; y < this.array.length; y++) {
-	            for (var x = 0; x < this.array[y].length; x++) {
-	                if (this.array[y][x]) {
-	                    coveredSquares.push([startY + y, startX + x]);
-	                }
-	            }
-	        }
-	        return coveredSquares;
-	    },
-	
-	    unique: function(array){
-	       var uniqueArray = [];
-	       for (var item of array){
-	          if (!this.isItemInArray(uniqueArray, item)){
-	            uniqueArray.push(item);
-	          }
-	       }
-	       return uniqueArray;
-	    },
-	
-	  isItemInArray: function(array, item) {
-	        for (var i = 0; i < array.length; i++) {
-	            if (array[i][0] == item[0] && array[i][1] == item[1]) {
-	                return true;
-	            }
-	        }
-	        return false;
-	    },
-	    rotate: function() {
-	        var rotatedArray = this.generateArray();
-	        for (var x = 4; x > -1; x--) {
-	            for (var y = 0; y < 5; y++) {
-	                var newY = y - 4;
-	                if (newY < 0) {
-	                    newY = newY * -1;
-	                }
-	                rotatedArray[x][y] = this.array[newY][x];
-	            }
-	        }
-	        this.array = rotatedArray;
-	        this.getRel();
-	    },
-	    flip: function() { // NOTE: do we want just vertical flip - do we want horizontal flip also
-	        this.array = this.array.reverse();
-	        this.getRel();
-	    }, // NOTE: horizontal flip could be done by rotate twice and then flip ( no new functions required)
-	    getRel: function() {
-	        var rel = [[],[],[],[],[]];
-	        for (var y = 0; y < this.array.length; y++) {
-	            for (var x = 0; x < this.array[y].length; x++) {
-	                if (this.array[y][x]) {
-	                    rel[y].push(x);
-	                }
-	            }
-	        }
-	        this.relative = rel;
-	        return this.relative;
-	    },
-	    generateArray: function(){
-	        var array = new Array(5);
-	        for (var i = 0; i < 5; i++) {
-	            array[i] = new Array(5);
-	            for (var j = 0; j < 5; j++) {
-	                array[i][j] = 0;
-	            }
-	        }
-	        return array;
-	    }
-	
-	};
-	module.exports = GamePiece;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	var RenderEngine = function(element, heightWidth) {
-	    this.canvas = element;
-	    this.canvas.height = heightWidth;
-	    this.canvas.width = heightWidth;
-	    this.context = this.canvas.getContext('2d');
-	    this.scale = heightWidth / 20;
-	};
-	
-	RenderEngine.prototype = {
-	    fillBox: function(x, y, colour) {
-	        this.context.fillStyle = colour.light;
-	        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
-	        this.context.fillStyle = colour.dark;
-	        this.context.fillRect((x*this.scale)+3, (y*this.scale)+3, this.scale-6, this.scale-6);
-	        this.context.fillStyle = colour.light;
-	        this.context.fillRect((x*this.scale)+5, (y*this.scale)+5, this.scale-10, this.scale-10);
-	        this.context.lineWidth = 1;
-	    },
-	    fillBoard: function(board) {
-	        for (var y = 0; y < board.length; y++) {
-	            for (var x = 0; x < board[y].length; x++) {
-	                this.fillBox(x,y,this.getUserColour(board[y][x]));
-	            }
-	        }
-	    },
-	    getMousePos: function(e) {
-	        var rect = this.canvas.getBoundingClientRect();
-	        var tPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-left'));
-	        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
-	        x = e.clientX - rect.left - lPadding;
-	        y = e.clientY - rect.top - tPadding;
-	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
-	    },
-	    redraw: function(board, mouseEvent, userColour, piece) {
-	        var curPos = null;
-	        if (mouseEvent) {
-	            curPos = this.getMousePos(mouseEvent);
-	        }
-	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	        this.fillBoard(board);
-	        if (curPos &&  userColour &&piece) {
-	            this.highlightBox(curPos, userColour, piece);
-	        }
-	        this.drawGrid();
-	    },
-	    highlightBox: function(pos, userColour, piece) {
-	        this.context.beginPath();
-	        this.context.strokeStyle = this.getUserColour(userColour).light;
-	        this.context.lineWidth = this.scale / 5;
-	        var x = pos.x - 2;
-	        var y = pos.y - 2;
-	        for (var i = 0; i < piece.length; i++) {
-	            if (piece[i]) {
-	                for (var j = 0; j < piece[i].length; j++) {
-	                    this.drawBoxPart(x + piece[i][j], y+i, 'top');
-	                    this.drawBoxPart(x + piece[i][j], y+i, 'bottom');
-	                    this.drawBoxPart(x + piece[i][j], y+i, 'left');
-	                    this.drawBoxPart(x + piece[i][j], y+i, 'right');
-	                }
-	            }
-	        }
-	        this.context.stroke();
-	        this.context.lineWidth = 1;
-	    },
-	    drawBoxPart: function(x, y, box) {
-	        x *= this.scale;
-	        y *= this.scale;
-	        switch (box) {
-	            case 'top':
-	                this.context.moveTo(x + 1, y + 1);
-	                this.context.lineTo(x + (this.scale-1), y + 1);
-	                break;
-	            case 'left':
-	                this.context.moveTo(x + 1, y + 1);
-	                this.context.lineTo(x + 1, y + (this.scale-1));
-	                break;
-	            case 'right':
-	                this.context.moveTo(x + (this.scale-1), y + 1);
-	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
-	                break;
-	            case 'bottom':
-	                this.context.moveTo(x + 1, y + (this.scale-1));
-	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
-	                break;
-	        }
-	    },
-	    drawGrid: function() {
-	        this.context.beginPath();
-	        var i = 0;
-	        while ( i <= this.canvas.width ) {
-	            this.context.strokeStyle = "#837E7C";
-	            this.context.moveTo(i,0);
-	            this.context.lineTo(i, this.canvas.height);
-	            this.context.moveTo(0,i);
-	            this.context.lineTo(this.canvas.width, i);
-	            i = i + this.scale;
-	        }
-	        this.context.stroke();
-	    },
-	    getUserColour: function(colour) {
-	        switch (colour) {
-	            case 'R':
-	                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
-	            case 'G':
-	                return {light: '#4CC417', dark: '#437C17'};//green
-	            case 'B':
-	                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
-	            case 'Y':
-	                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
-	            default:
-	                return {light: '#FFFFFF', dark: '#E5E4E2'};
-	        }
-	    }
-	};
-	
-	module.exports = RenderEngine;
-
-
-/***/ },
-/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var GameBoard = __webpack_require__(4);
-	var RenderEngine = __webpack_require__(2);
-	var SelectRenderEngine = __webpack_require__(9);
+	var GameBoard = __webpack_require__(2);
+	var RenderEngine = __webpack_require__(3);
+	var SelectRenderEngine = __webpack_require__(4);
 	var PresetPieces = __webpack_require__(5);
-	var GamePiece = __webpack_require__(1);
-	var User = __webpack_require__(6);
-	var Log = __webpack_require__(7);
+	var GamePiece = __webpack_require__(6);
+	var User = __webpack_require__(7);
+	var Log = __webpack_require__(8);
 	
 	var Game = function(users, canvasElement, canvasWidth, selectCanvasElement, debug) {
 	    this.users = [];
@@ -738,7 +430,7 @@
 
 
 /***/ },
-/* 4 */
+/* 2 */
 /***/ function(module, exports) {
 
 	var GameBoard = function() {
@@ -875,301 +567,129 @@
 
 
 /***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var GamePiece = __webpack_require__(1);
-	
-	var PresetPieces = function() {
-	    this.rels = [
-	        [[ ], [ ], [2], [ ], [ ]],
-	        [[ ], [ ], [2,3], [ ], [ ]],
-	        [[ ], [ ], [1,2], [2], [ ]],
-	        [[ ], [ ], [1,2,3], [ ], [ ]],
-	        [[ ], [2,3], [2,3], [ ], [ ]],
-	        [[ ], [2], [1,2,3], [ ], [ ]],
-	        [[ ], [ ], [1,2,3,4], [ ], [ ]],
-	        [[ ], [3], [1,2,3], [ ], [ ]],
-	        [[ ], [2,3], [1,2], [ ], [ ]],
-	        [[ ], [1], [1,2,3,4], [ ], [ ]],
-	        [[ ], [2], [2], [1,2,3 ], [ ]],
-	        [[2], [2], [2,3,4], [ ], [ ]],
-	        [[ ], [ ], [2,3,4], [1,2 ], [ ]],
-	        [[ ], [3], [1,2,3], [1], [ ]],
-	        [[2], [2], [2], [2], [2]],
-	        [[ ], [2], [2,3], [2,3], [ ]],
-	        [[ ], [2,3], [1,2], [1], [ ]],
-	        [[ ], [2,3], [2], [2,3], [ ]],
-	        [[ ], [2,3], [1,2], [2], [ ]],
-	        [[ ], [2], [1,2,3], [2], [ ]],
-	        [[ ], [2], [1,2,3,4], [ ], [ ]]
-	    ];
-	};
-	
-	PresetPieces.prototype = {
-	    generatePieces: function() {
-	        var pieces = [];
-	        for (var i = 0; i < this.rels.length; i++) {
-	            pieces.push(new GamePiece(this.rels[i]));
-	        }
-	        return pieces;
-	    }
-	};
-	
-	module.exports = PresetPieces;
-	
-	// ONE           = [[ ],
-	//                  [ ],
-	//                  [2],
-	//                  [ ],
-	//                  [ ]];
-	//
-	// TWO           = [[ ],
-	//                 [ ],
-	//                 [2,3],
-	//                 [ ],
-	//                 [ ]];
-	//
-	// THREE         = [[ ],
-	//                  [ ],
-	//                  [1,2],
-	//                  [ 2],
-	//                  [ ]];
-	//
-	// FOUR            = [[ ],
-	//                   [ ],
-	//                   [1,2,3],
-	//                   [ ],
-	//                   [ ]];
-	//
-	// FIVE          = [[ ],
-	//                  [ 2,3],
-	//                  [2,3],
-	//                  [ ],
-	//                  [ ]];
-	//
-	// SIX          = [[ ],
-	//                 [ 2],
-	//                 [1,2,3],
-	//                 [ ],
-	//                 [ ]]
-	//
-	// SEVEN        = [[ ],
-	//                 [ ],
-	//                 [1,2,3,4],
-	//                 [ ],
-	//                 [ ]];
-	//
-	// EIGHT        = [[ ],
-	//                 [ 3],
-	//                 [1,2,3],
-	//                 [ ],
-	//                 [ ]]
-	//
-	// NINE         = [[ ],
-	//                 [ 2,3],
-	//                 [1,2],
-	//                 [ ],
-	//                 [ ]]
-	//
-	// TEN          = [[ ],
-	//                 [ 1],
-	//                 [1,2,3,4],
-	//                 [ ],
-	//                 [ ]]
-	//
-	// ELEVEN        = [[ ],
-	//                 [ 2],
-	//                 [2],
-	//                 [1,2,3 ],
-	//                 [ ]]
-	//
-	// TWELVE       = [[2 ],
-	//                 [ 2],
-	//                 [2,3,4],
-	//                 [ ],
-	//                 [ ]]
-	//
-	// THIRTEEN     = [[ ],
-	//                 [ ],
-	//                 [2,3,4],
-	//                 [1,2 ],
-	//                 [ ]]
-	//
-	// FOURTEEN     = [[ ],
-	//                 [ 3],
-	//                 [1,2,3],
-	//                 [ 1],
-	//                 [ ]]
-	//
-	// FIFTEEN      = [[ 2],
-	//                 [ 2],
-	//                 [2],
-	//                 [ 2],
-	//                 [ 2]]
-	//
-	// SIXTEEN      = [[ ],
-	//                 [ 2],
-	//                 [2,3],
-	//                 [ 2,3],
-	//                 [ ]]
-	//
-	// SEVENTEEN    = [[ ],
-	//                 [ 2,3],
-	//                 [1,2],
-	//                 [ 1],
-	//                 [ ]]
-	//
-	// EIGHTEEN     = [[ ],
-	//                 [ 2,3],
-	//                 [2],
-	//                 [ 2,3],
-	//                 [ ]]
-	//
-	// NINETEEN     = [[ ],
-	//                 [ 2,3],
-	//                 [1,2],
-	//                 [ 1],
-	//                 [ ]]
-	//
-	// TWENTY       = [[ ],
-	//                 [ 2],
-	//                 [1,2,3],
-	//                 [ 2],
-	//                 [ ]]
-	//
-	// TWENTY-ONE   = [[ ],
-	//                 [ 2],
-	//                 [1,2,3,4],
-	//                 [ ],
-	//                 [ ]]
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var GamePiece = __webpack_require__(1);
-	var User = function(name, colour) {
-	    this.name = name;
-	    this.colour = colour;
-	    this.pieces = [];
-	    this.selectedPieceIndex = null;
-	    this.playing = true;
-	};
-	
-	User.prototype = {
-	
-	    colourCode: function() {
-	        return this.colour[0].toUpperCase();
-	    },
-	    selectPiece: function(pieceIndex) {
-	        if (this.pieces[pieceIndex]) {
-	            this.selectedPieceIndex = pieceIndex;
-	        }
-	    },
-	    getSelectedPiece: function() {
-	        return this.pieces[this.selectedPieceIndex];
-	    },
-	    rotatePiece: function() {
-	        this.pieces[this.selectedPieceIndex].rotate();
-	    },
-	    flipPiece: function() {
-	        this.pieces[this.selectedPieceIndex].flip();
-	    },
-	    removeSelectedPiece: function(piece) {
-	        var index = null;
-	        for (var i = 0; i < this.pieces.length; i++) {
-	            var origRel = this.pieces[i].relative;
-	            for (var z = 0; z < 4; z++) {
-	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
-	                    index = i;
-	                }
-	                this.pieces[i].rotate();
-	            }
-	            for (var z = 0; z < 4; z++) {
-	                this.pieces[i].rotate();
-	                this.pieces[i].flip();
-	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
-	                    index = i;
-	                }
-	                this.pieces[i].flip();
-	            }
-	            this.pieces[i] = new GamePiece(origRel);
-	        }
-	        if (index !== null) {
-	            this.pieces.splice(index, 1);
-	        }
-	        this.selectedPieceIndex = null;
-	        if (this.pieces.length === 0) {
-	            this.playing = false;
-	        }
-	    },
-	    endPlay: function() {
-	        this.playing = false;
-	    }
-	};
-	
-	module.exports = User;
-
-
-/***/ },
-/* 7 */
+/* 3 */
 /***/ function(module, exports) {
 
-	var Log = function() {
-	      this.data = [];
-	      this.currentIndex = 0;
-	      this.gameID = null;
+	var RenderEngine = function(element, heightWidth) {
+	    this.canvas = element;
+	    this.canvas.height = heightWidth;
+	    this.canvas.width = heightWidth;
+	    this.context = this.canvas.getContext('2d');
+	    this.scale = heightWidth / 20;
 	};
 	
-	Log.prototype = {
-	
-	    setGameID: function(id) {
-	        this.gameID = id;
+	RenderEngine.prototype = {
+	    fillBox: function(x, y, colour) {
+	        this.context.fillStyle = colour.light;
+	        this.context.fillRect(x*this.scale, y*this.scale, this.scale, this.scale);
+	        this.context.fillStyle = colour.dark;
+	        this.context.fillRect((x*this.scale)+3, (y*this.scale)+3, this.scale-6, this.scale-6);
+	        this.context.fillStyle = colour.light;
+	        this.context.fillRect((x*this.scale)+5, (y*this.scale)+5, this.scale-10, this.scale-10);
+	        this.context.lineWidth = 1;
 	    },
-	    addData: function(action, options) {
-	        this.data.push({action: action, options: options});//action = skip or place; options = rel + position
-	    },
-	    grabData: function() {
-	        var data = this.data[this.currentIndex];
-	        this.nextIndex();
-	        return data;
-	    },
-	    nextIndex: function() {
-	        this.currentIndex++;
-	        if (this.currentIndex === this.data.length) {
-	          this.currentIndex = null;
+	    fillBoard: function(board) {
+	        for (var y = 0; y < board.length; y++) {
+	            for (var x = 0; x < board[y].length; x++) {
+	                this.fillBox(x,y,this.getUserColour(board[y][x]));
+	            }
 	        }
 	    },
-	    saveData: function() {
-	        var request = new XMLHttpRequest();
-	        request.open('POST', 'savelog');
-	        request.setRequestHeader('Content-Type', 'application/json');
-	        var data = {game: this.gameID, data: this.data};
-	        request.send(JSON.stringify(data));
+	    getMousePos: function(e) {
+	        var rect = this.canvas.getBoundingClientRect();
+	        var tPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-left'));
+	        var lPadding = parseInt(window.getComputedStyle(this.canvas, null).getPropertyValue('padding-top'));
+	        x = e.clientX - rect.left - lPadding;
+	        y = e.clientY - rect.top - tPadding;
+	        return {x: parseInt(x / this.scale), y: parseInt(y / this.scale)};
 	    },
-	    loadData: function(callback, context) {
-	        var request = new XMLHttpRequest();
-	        request.onload = function() {
-	            if (request.status === 200) {
-	                callback(JSON.parse(request.responseText)[0], context);
+	    redraw: function(board, mouseEvent, userColour, piece) {
+	        var curPos = null;
+	        if (mouseEvent) {
+	            curPos = this.getMousePos(mouseEvent);
+	        }
+	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	        this.fillBoard(board);
+	        if (curPos &&  userColour &&piece) {
+	            this.highlightBox(curPos, userColour, piece);
+	        }
+	        this.drawGrid();
+	    },
+	    highlightBox: function(pos, userColour, piece) {
+	        this.context.beginPath();
+	        this.context.strokeStyle = this.getUserColour(userColour).light;
+	        this.context.lineWidth = this.scale / 5;
+	        var x = pos.x - 2;
+	        var y = pos.y - 2;
+	        for (var i = 0; i < piece.length; i++) {
+	            if (piece[i]) {
+	                for (var j = 0; j < piece[i].length; j++) {
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'top');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'bottom');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'left');
+	                    this.drawBoxPart(x + piece[i][j], y+i, 'right');
+	                }
 	            }
-	        };
-	        request.open('POST', 'loadlog');
-	        request.setRequestHeader('Content-Type', 'application/json');
-	        request.send(JSON.stringify({game: this.gameID}));
+	        }
+	        this.context.stroke();
+	        this.context.lineWidth = 1;
 	    },
-	    setData: function(data) {
-	        this.data = data;
+	    drawBoxPart: function(x, y, box) {
+	        x *= this.scale;
+	        y *= this.scale;
+	        switch (box) {
+	            case 'top':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + 1);
+	                break;
+	            case 'left':
+	                this.context.moveTo(x + 1, y + 1);
+	                this.context.lineTo(x + 1, y + (this.scale-1));
+	                break;
+	            case 'right':
+	                this.context.moveTo(x + (this.scale-1), y + 1);
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	            case 'bottom':
+	                this.context.moveTo(x + 1, y + (this.scale-1));
+	                this.context.lineTo(x + (this.scale-1), y + (this.scale-1));
+	                break;
+	        }
+	    },
+	    drawGrid: function() {
+	        this.context.beginPath();
+	        var i = 0;
+	        while ( i <= this.canvas.width ) {
+	            this.context.strokeStyle = "#837E7C";
+	            this.context.moveTo(i,0);
+	            this.context.lineTo(i, this.canvas.height);
+	            this.context.moveTo(0,i);
+	            this.context.lineTo(this.canvas.width, i);
+	            i = i + this.scale;
+	        }
+	        this.context.stroke();
+	    },
+	    getUserColour: function(colour) {
+	        switch (colour) {
+	            case 'R':
+	                return {light: '#F62217', dark: '#800517'};//red;light coral, ruby
+	            case 'G':
+	                return {light: '#4CC417', dark: '#437C17'};//green
+	            case 'B':
+	                return {light: '#488AC7', dark: '#1F45FC'};//blue; blue eyes, orchid
+	            case 'Y':
+	                return {light: '#FFFF00', dark: '#C68E17'};//yellow; rubberduck, caramel
+	            default:
+	                return {light: '#FFFFFF', dark: '#E5E4E2'};
+	        }
 	    }
 	};
-	module.exports = Log;
+	
+	module.exports = RenderEngine;
 
 
 /***/ },
-/* 8 */,
-/* 9 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var SelectRenderEngine = function(element, height, width) {
@@ -1342,6 +862,485 @@
 	};
 	
 	module.exports = SelectRenderEngine;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var GamePiece = __webpack_require__(6);
+	
+	var PresetPieces = function() {
+	    this.rels = [
+	        [[ ], [ ], [2], [ ], [ ]],
+	        [[ ], [ ], [2,3], [ ], [ ]],
+	        [[ ], [ ], [1,2], [2], [ ]],
+	        [[ ], [ ], [1,2,3], [ ], [ ]],
+	        [[ ], [2,3], [2,3], [ ], [ ]],
+	        [[ ], [2], [1,2,3], [ ], [ ]],
+	        [[ ], [ ], [1,2,3,4], [ ], [ ]],
+	        [[ ], [3], [1,2,3], [ ], [ ]],
+	        [[ ], [2,3], [1,2], [ ], [ ]],
+	        [[ ], [1], [1,2,3,4], [ ], [ ]],
+	        [[ ], [2], [2], [1,2,3 ], [ ]],
+	        [[2], [2], [2,3,4], [ ], [ ]],
+	        [[ ], [ ], [2,3,4], [1,2 ], [ ]],
+	        [[ ], [3], [1,2,3], [1], [ ]],
+	        [[2], [2], [2], [2], [2]],
+	        [[ ], [2], [2,3], [2,3], [ ]],
+	        [[ ], [2,3], [1,2], [1], [ ]],
+	        [[ ], [2,3], [2], [2,3], [ ]],
+	        [[ ], [2,3], [1,2], [2], [ ]],
+	        [[ ], [2], [1,2,3], [2], [ ]],
+	        [[ ], [2], [1,2,3,4], [ ], [ ]]
+	    ];
+	};
+	
+	PresetPieces.prototype = {
+	    generatePieces: function() {
+	        var pieces = [];
+	        for (var i = 0; i < this.rels.length; i++) {
+	            pieces.push(new GamePiece(this.rels[i]));
+	        }
+	        return pieces;
+	    }
+	};
+	
+	module.exports = PresetPieces;
+	
+	// ONE           = [[ ],
+	//                  [ ],
+	//                  [2],
+	//                  [ ],
+	//                  [ ]];
+	//
+	// TWO           = [[ ],
+	//                 [ ],
+	//                 [2,3],
+	//                 [ ],
+	//                 [ ]];
+	//
+	// THREE         = [[ ],
+	//                  [ ],
+	//                  [1,2],
+	//                  [ 2],
+	//                  [ ]];
+	//
+	// FOUR            = [[ ],
+	//                   [ ],
+	//                   [1,2,3],
+	//                   [ ],
+	//                   [ ]];
+	//
+	// FIVE          = [[ ],
+	//                  [ 2,3],
+	//                  [2,3],
+	//                  [ ],
+	//                  [ ]];
+	//
+	// SIX          = [[ ],
+	//                 [ 2],
+	//                 [1,2,3],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// SEVEN        = [[ ],
+	//                 [ ],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]];
+	//
+	// EIGHT        = [[ ],
+	//                 [ 3],
+	//                 [1,2,3],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// NINE         = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// TEN          = [[ ],
+	//                 [ 1],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// ELEVEN        = [[ ],
+	//                 [ 2],
+	//                 [2],
+	//                 [1,2,3 ],
+	//                 [ ]]
+	//
+	// TWELVE       = [[2 ],
+	//                 [ 2],
+	//                 [2,3,4],
+	//                 [ ],
+	//                 [ ]]
+	//
+	// THIRTEEN     = [[ ],
+	//                 [ ],
+	//                 [2,3,4],
+	//                 [1,2 ],
+	//                 [ ]]
+	//
+	// FOURTEEN     = [[ ],
+	//                 [ 3],
+	//                 [1,2,3],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// FIFTEEN      = [[ 2],
+	//                 [ 2],
+	//                 [2],
+	//                 [ 2],
+	//                 [ 2]]
+	//
+	// SIXTEEN      = [[ ],
+	//                 [ 2],
+	//                 [2,3],
+	//                 [ 2,3],
+	//                 [ ]]
+	//
+	// SEVENTEEN    = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// EIGHTEEN     = [[ ],
+	//                 [ 2,3],
+	//                 [2],
+	//                 [ 2,3],
+	//                 [ ]]
+	//
+	// NINETEEN     = [[ ],
+	//                 [ 2,3],
+	//                 [1,2],
+	//                 [ 1],
+	//                 [ ]]
+	//
+	// TWENTY       = [[ ],
+	//                 [ 2],
+	//                 [1,2,3],
+	//                 [ 2],
+	//                 [ ]]
+	//
+	// TWENTY-ONE   = [[ ],
+	//                 [ 2],
+	//                 [1,2,3,4],
+	//                 [ ],
+	//                 [ ]]
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	var GamePiece = function(tiles) {
+	    this.relative = tiles;
+	    this.array = this.generateArray();
+	    this.setup(tiles);
+	
+	};
+	
+	GamePiece.prototype = {
+	
+	    setup: function(input) {
+	        for (var array of input) {
+	            if (array.length > 0) {
+	                for (var element of array) {
+	                    this.changeTile(element, input.indexOf(array), 1);
+	                }
+	            }
+	        }
+	    },
+	    changeTile: function(x, y, value) {
+	        this.array[y][x] = value;
+	    },
+	    corners: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
+	        var corners = [];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	
+	                if (this.array[y][x]) {
+	                    if (this.array[y + 1]) {
+	                        if (!this.array[y][x + 1] && !this.array[y + 1][x]) {
+	                            corners.push([startY + y + 1, startX + x + 1]);
+	                        }
+	                        if (!this.array[y][x - 1] && !this.array[y + 1][x]) {
+	                            corners.push([startY + y + 1, startX + x - 1]);
+	                        }
+	                    } else if (this.array[y + 1] === undefined) {
+	                        if (!this.array[y][x + 1]) {
+	                            corners.push([startY + y + 1, startX + x + 1]);
+	                        }
+	                        if (!this.array[y][x - 1]) {
+	                            corners.push([startY + y + 1, startX + x - 1]);
+	                        }
+	                    }
+	
+	                    if (this.array[y - 1]) {
+	                        if (!this.array[y][x + 1] && !this.array[y - 1][x]) {
+	                            corners.push([startY + y - 1, startX + x + 1]);
+	                        }
+	                        if (!this.array[y][x - 1] && !this.array[y - 1][x]) {
+	                            corners.push([startY + y - 1, startX + x - 1]);
+	                        }
+	                    } else if (this.array[y -1] === undefined) {
+	                        if (!this.array[y][x + 1]) {
+	                            corners.push([startY + y - 1, startX + x + 1]);
+	                        }
+	                        if (!this.array[y][x - 1]) {
+	                            corners.push([startY + y - 1, startX + x - 1]);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	        return this.unique(corners);
+	    },
+	
+	    flats: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
+	        var flatsArray = [];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	
+	                if (this.array[y][x]) {
+	
+	                      if (!this.array[y][x + 1]) {
+	                          flatsArray.push([startY + y, startX + x + 1]);
+	                      }
+	
+	                      if (!this.array[y][x - 1]) {
+	                          flatsArray.push([startY + y, startX + x - 1]);
+	                      }
+	
+	                      if (this.array[y + 1]){
+	                        if (!this.array[y + 1][x] || this.array[y + 1][x] === undefined) {
+	                          flatsArray.push([startY + y + 1, startX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([startY + y + 1, startX + x]);
+	                      }
+	
+	                      if (this.array[y - 1]){
+	                        if (!this.array[y - 1][x] || this.array[y - 1][x] === undefined) {
+	
+	                          flatsArray.push([startY + y - 1, startX + x]);
+	                        }
+	                      }else{
+	                        flatsArray.push([startY + y - 1, startX + x]);
+	                      }
+	                }
+	            }
+	        }
+	        return this.unique(flatsArray);
+	    },
+	
+	    covered: function(coordinates) {
+	        var startY = coordinates[0] - 2;
+	        var startX = coordinates[1] - 2;
+	        coveredSquares = [];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	                if (this.array[y][x]) {
+	                    coveredSquares.push([startY + y, startX + x]);
+	                }
+	            }
+	        }
+	        return coveredSquares;
+	    },
+	
+	    unique: function(array){
+	       var uniqueArray = [];
+	       for (var item of array){
+	          if (!this.isItemInArray(uniqueArray, item)){
+	            uniqueArray.push(item);
+	          }
+	       }
+	       return uniqueArray;
+	    },
+	
+	  isItemInArray: function(array, item) {
+	        for (var i = 0; i < array.length; i++) {
+	            if (array[i][0] == item[0] && array[i][1] == item[1]) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    },
+	    rotate: function() {
+	        var rotatedArray = this.generateArray();
+	        for (var x = 4; x > -1; x--) {
+	            for (var y = 0; y < 5; y++) {
+	                var newY = y - 4;
+	                if (newY < 0) {
+	                    newY = newY * -1;
+	                }
+	                rotatedArray[x][y] = this.array[newY][x];
+	            }
+	        }
+	        this.array = rotatedArray;
+	        this.getRel();
+	    },
+	    flip: function() { // NOTE: do we want just vertical flip - do we want horizontal flip also
+	        this.array = this.array.reverse();
+	        this.getRel();
+	    }, // NOTE: horizontal flip could be done by rotate twice and then flip ( no new functions required)
+	    getRel: function() {
+	        var rel = [[],[],[],[],[]];
+	        for (var y = 0; y < this.array.length; y++) {
+	            for (var x = 0; x < this.array[y].length; x++) {
+	                if (this.array[y][x]) {
+	                    rel[y].push(x);
+	                }
+	            }
+	        }
+	        this.relative = rel;
+	        return this.relative;
+	    },
+	    generateArray: function(){
+	        var array = new Array(5);
+	        for (var i = 0; i < 5; i++) {
+	            array[i] = new Array(5);
+	            for (var j = 0; j < 5; j++) {
+	                array[i][j] = 0;
+	            }
+	        }
+	        return array;
+	    }
+	
+	};
+	module.exports = GamePiece;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var GamePiece = __webpack_require__(6);
+	var User = function(name, colour) {
+	    this.name = name;
+	    this.colour = colour;
+	    this.pieces = [];
+	    this.selectedPieceIndex = null;
+	    this.playing = true;
+	};
+	
+	User.prototype = {
+	
+	    colourCode: function() {
+	        return this.colour[0].toUpperCase();
+	    },
+	    selectPiece: function(pieceIndex) {
+	        if (this.pieces[pieceIndex]) {
+	            this.selectedPieceIndex = pieceIndex;
+	        }
+	    },
+	    getSelectedPiece: function() {
+	        return this.pieces[this.selectedPieceIndex];
+	    },
+	    rotatePiece: function() {
+	        this.pieces[this.selectedPieceIndex].rotate();
+	    },
+	    flipPiece: function() {
+	        this.pieces[this.selectedPieceIndex].flip();
+	    },
+	    removeSelectedPiece: function(piece) {
+	        var index = null;
+	        for (var i = 0; i < this.pieces.length; i++) {
+	            var origRel = this.pieces[i].relative;
+	            for (var z = 0; z < 4; z++) {
+	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
+	                    index = i;
+	                }
+	                this.pieces[i].rotate();
+	            }
+	            for (var z = 0; z < 4; z++) {
+	                this.pieces[i].rotate();
+	                this.pieces[i].flip();
+	                if (JSON.stringify(this.pieces[i].relative) === JSON.stringify(piece.relative)) {
+	                    index = i;
+	                }
+	                this.pieces[i].flip();
+	            }
+	            this.pieces[i] = new GamePiece(origRel);
+	        }
+	        if (index !== null) {
+	            this.pieces.splice(index, 1);
+	        }
+	        this.selectedPieceIndex = null;
+	        if (this.pieces.length === 0) {
+	            this.playing = false;
+	        }
+	    },
+	    endPlay: function() {
+	        this.playing = false;
+	    }
+	};
+	
+	module.exports = User;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	var Log = function() {
+	      this.data = [];
+	      this.currentIndex = 0;
+	      this.gameID = null;
+	};
+	
+	Log.prototype = {
+	
+	    setGameID: function(id) {
+	        this.gameID = id;
+	    },
+	    addData: function(action, options) {
+	        this.data.push({action: action, options: options});//action = skip or place; options = rel + position
+	    },
+	    grabData: function() {
+	        var data = this.data[this.currentIndex];
+	        this.nextIndex();
+	        return data;
+	    },
+	    nextIndex: function() {
+	        this.currentIndex++;
+	        if (this.currentIndex === this.data.length) {
+	          this.currentIndex = null;
+	        }
+	    },
+	    saveData: function() {
+	        var request = new XMLHttpRequest();
+	        request.open('POST', 'savelog');
+	        request.setRequestHeader('Content-Type', 'application/json');
+	        var data = {game: this.gameID, data: this.data};
+	        request.send(JSON.stringify(data));
+	    },
+	    loadData: function(callback, context) {
+	        var request = new XMLHttpRequest();
+	        request.onload = function() {
+	            if (request.status === 200) {
+	                callback(JSON.parse(request.responseText)[0], context);
+	            }
+	        };
+	        request.open('POST', 'loadlog');
+	        request.setRequestHeader('Content-Type', 'application/json');
+	        request.send(JSON.stringify({game: this.gameID}));
+	    },
+	    setData: function(data) {
+	        this.data = data;
+	    }
+	};
+	module.exports = Log;
 
 
 /***/ }
